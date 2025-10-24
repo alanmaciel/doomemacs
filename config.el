@@ -128,7 +128,7 @@
       (time-subtract (current-time)
                      (days-to-time 30)))  ;; 30 days
 
-(setq forge-topic-list-limit 100          ;; máximo global
+(setq forge-topic-list-limit 50          ;; máximo global
       forge-topic-list-limit-per-repo 50) ;; máximo por repo
 
 (use-package! diff-hl

@@ -61,3 +61,4 @@
 (package! org-bullets)
 (package! websocket)
 (package! org-roam-ui)
+(package! magit-delta)
