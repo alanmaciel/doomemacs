@@ -48,10 +48,10 @@
 
 
 
-(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 14)
-      doom-big-font (font-spec :family "Iosevka Nerd Font" :size 18)
-      doom-variable-pitch-font (font-spec :family "Overpass Nerd Font" :size 10)
-      doom-serif-font (font-spec :family "BlexMono Nerd Font" :weight 'light :size 10))
+(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 20 )
+      doom-big-font (font-spec :family "Iosevka Nerd Font" :size 24)
+      doom-variable-pitch-font (font-spec :family "Overpass Nerd Font" :size 22)
+      doom-serif-font (font-spec :family "BlexMono Nerd Font" :weight 'light :size 22))
 
 (custom-set-faces!
   '(font-lock-comment-face :slant italic))
@@ -107,7 +107,7 @@
 
 (setq default-frame-alist '((width . 115)(height . 34)))
 
-(add-to-list 'default-frame-alist '(alpha . 90))
+;; (add-to-list 'default-frame-alist '(alpha . 90))
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
