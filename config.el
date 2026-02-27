@@ -439,9 +439,15 @@
 
   (add-hook 'markdown-mode-hook #'abbrev-mode)
 
-  ;; Revelar markup en la línea actual (### ** etc.) mientras se edita
+  ;; --- Revelar markup en la línea actual (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
     "Posición de inicio de la línea que actualmente muestra el markup crudo.")
+
+  (defun nb/on-table-line-p ()
+    "Non-nil si la línea actual es una fila de tabla markdown."
+    (save-excursion
+      (beginning-of-line)
+      (looking-at "[[:space:]]*|")))
 
   (defun nb/refontify-line (line-beg)
     "Re-aplica font-lock a la línea que empieza en LINE-BEG para volver a ocultar el markup."
@@ -455,17 +461,21 @@
                                   (line-end-position)))))
 
   (defun nb/unhide-current-line ()
-    "Muestra el markup markdown en la línea actual; lo vuelve a ocultar al moverse."
+    "Muestra el markup markdown en la línea actual; lo vuelve a ocultar al moverse.
+Ignora líneas de tabla — valign maneja su display."
     (unless (minibufferp)
       (let ((cur-beg (line-beginning-position)))
         (unless (equal cur-beg nb/markdown-shown-line-beg)
           ;; Vuelve a ocultar la línea anterior
           (nb/refontify-line nb/markdown-shown-line-beg)
-          ;; Revela la línea actual (invisible cubre bold/code, display cubre headings)
-          (with-silent-modifications
-            (remove-text-properties cur-beg (line-end-position)
-                                    '(invisible nil display nil composition nil)))
-          (setq nb/markdown-shown-line-beg cur-beg)))))
+          ;; En líneas de tabla, no tocar nada (valign usa display properties)
+          (if (nb/on-table-line-p)
+              (setq nb/markdown-shown-line-beg nil)
+            ;; En otras líneas, revelar el markup
+            (with-silent-modifications
+              (remove-text-properties cur-beg (line-end-position)
+                                      '(invisible nil display nil composition nil)))
+            (setq nb/markdown-shown-line-beg cur-beg))))))
 
   (defun nb/markdown-setup ()
     "Setup por buffer para markdown."
@@ -474,18 +484,50 @@
 
   (add-hook 'markdown-mode-hook #'nb/markdown-setup)
 
-  ;; Ocultar filas separadoras de tablas (|---|---|  |:---:|---:|)
-  (defun nb/markdown-hide-table-separator-setup ()
-    "Hace invisible visualmente las filas |---|---| igualando color al fondo."
-    (let ((bg (or (face-background 'default nil t) "#282c34")))
-      (font-lock-add-keywords
-       nil
-       `(("^[[:space:]]*|[-|: \t]+|[[:space:]]*$"
-          0 '(face (:foreground ,bg :background ,bg :height 0.15)) prepend))
-       t))
-    (font-lock-flush))
+  ;; --- Background sutil en regiones de tabla ---
+  (defvar-local nb/table-overlays nil "Overlays para fondo de tabla.")
+  (defvar-local nb/table-update-timer nil "Timer debounce para actualizar overlays.")
 
-  (add-hook 'markdown-mode-hook #'nb/markdown-hide-table-separator-setup))
+  (defun nb/update-table-overlays ()
+    "Agrega background sutil a regiones de tabla markdown."
+    (when (timerp nb/table-update-timer)
+      (cancel-timer nb/table-update-timer)
+      (setq nb/table-update-timer nil))
+    (mapc #'delete-overlay nb/table-overlays)
+    (setq nb/table-overlays nil)
+    (let ((bg-alt (or (doom-color 'bg-alt) "#21242b")))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "^[[:space:]]*|" nil t)
+          (beginning-of-line)
+          (let ((beg (point)))
+            (while (and (not (eobp))
+                        (looking-at "^[[:space:]]*|"))
+              (forward-line 1))
+            (let ((ov (make-overlay beg (point) nil t nil)))
+              (overlay-put ov 'face `(:background ,bg-alt :extend t))
+              (overlay-put ov 'evaporate t)
+              (overlay-put ov 'nb-table t)
+              (push ov nb/table-overlays)))))))
+
+  (defun nb/schedule-table-overlay-update (&rest _)
+    "Actualiza overlays de tabla con debounce."
+    (when (timerp nb/table-update-timer)
+      (cancel-timer nb/table-update-timer))
+    (let ((buf (current-buffer)))
+      (setq nb/table-update-timer
+            (run-with-idle-timer 0.5 nil
+              (lambda ()
+                (when (buffer-live-p buf)
+                  (with-current-buffer buf
+                    (nb/update-table-overlays))))))))
+
+  (defun nb/table-bg-setup ()
+    "Inicializa overlays de fondo para tablas."
+    (nb/update-table-overlays)
+    (add-hook 'after-change-functions #'nb/schedule-table-overlay-update nil t))
+
+  (add-hook 'markdown-mode-hook #'nb/table-bg-setup))
 
 ;; Tablas pixel-perfect
 (use-package! valign
