@@ -476,12 +476,13 @@
 
   ;; Ocultar filas separadoras de tablas (|---|---|  |:---:|---:|)
   (defun nb/markdown-hide-table-separator-setup ()
-    "Oculta las filas |---|---| de tablas markdown via font-lock."
-    (font-lock-add-keywords
-     nil
-     '(("^[[:space:]]*|[-|: \t]+|[[:space:]]*$"
-        0 '(face markdown-markup-face invisible markdown-markup) prepend))
-     t)
+    "Hace invisible visualmente las filas |---|---| igualando color al fondo."
+    (let ((bg (or (face-background 'default nil t) "#282c34")))
+      (font-lock-add-keywords
+       nil
+       `(("^[[:space:]]*|[-|: \t]+|[[:space:]]*$"
+          0 '(face (:foreground ,bg :background ,bg :height 0.15)) prepend))
+       t))
     (font-lock-flush))
 
   (add-hook 'markdown-mode-hook #'nb/markdown-hide-table-separator-setup))
