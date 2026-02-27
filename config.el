@@ -527,22 +527,25 @@ Ignora líneas de tabla — valign maneja su display."
     (nb/update-table-overlays)
     (add-hook 'after-change-functions #'nb/schedule-table-overlay-update nil t))
 
-  (add-hook 'markdown-mode-hook #'nb/table-bg-setup))
+  (add-hook 'markdown-mode-hook #'nb/table-bg-setup)
 
-;; Tablas pixel-perfect
-(use-package! valign
-  :hook (markdown-mode . valign-mode)
-  :config
+  ;; --- Valign: tablas pixel-perfect con fancy bars ---
+  (require 'valign)
   (setq valign-fancy-bar t)
-  ;; Forzar alineación al abrir un buffer markdown (timing fix)
-  (add-hook 'markdown-mode-hook
-            (lambda ()
-              (let ((buf (current-buffer)))
-                (run-with-idle-timer 0.5 nil
-                  (lambda ()
-                    (when (buffer-live-p buf)
-                      (with-current-buffer buf
-                        (valign-region (point-min) (point-max))))))))))
+
+  (defun nb/valign-setup ()
+    "Activa valign con fancy bars y fuerza alineación."
+    (valign-mode 1)
+    (let ((buf (current-buffer)))
+      (run-with-idle-timer 0.5 nil
+        (lambda ()
+          (when (buffer-live-p buf)
+            (with-current-buffer buf
+              (valign-region (point-min) (point-max))))))))
+
+  (add-hook 'markdown-mode-hook #'nb/valign-setup t)) ;; t=append, corre al final
+
+;; (valign config movido dentro de after! markdown-mode arriba)
 
 ;; Emojis :smile: :wink: etc
 (use-package! emojify
