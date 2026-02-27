@@ -149,16 +149,6 @@
       (call-interactively #'magit-fetch-current)))
   (setq +workspaces-switch-project-function #'open-projectile-with-magit))
 
-;; (after! projectile-rails
-;;   ;; Example: switch from app/contracts/{resource}.rb to app/services/{resource} and vice-versa
-;;   (defun projectile-rails-find-contract ()
-;;     "Switch from contract to service and vice versa."
-;;     (interactive)
-;;     (if (string-match-p "app/contracts" (buffer-file-name)) (find-file (replace-regexp-in-string "contract" "service" (replace-regexp-in-string "_contracts" "_services" (buffer-file-name))))
-;;       (find-file (replace-regexp-in-string "service" "contract" (replace-regexp-in-string "_services" "_contracts" (buffer-file-name))))))
-;;   (map! :leader "rQ" #'projectile-rails-find-contract) ;; Uncomment to bind to SPC r q
-;;   )
-
 (require 'key-chord)
 (key-chord-mode t)
 ;; (key-chord-define-global "ue" 'evil-normal-state) ;; in DVORAK
@@ -168,11 +158,6 @@
 
 (after! projectile
   (setq projectile-globally-ignored-directories '("flow-typed" "node_modules" "~/.config/emacs/.local/" ".idea" ".vscode" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" ".ccls-cache" ".cache" ".clangd")))
-
-(after! projectile-rails
-  (doom-emacs-on-rails-add-custom-projectile-finder "services" "app/services/"  "\\(.+\\)\\.rb$" "app/services/${filename}.rb" "rt")
-  (doom-emacs-on-rails-add-custom-projectile-finder "admin" "app/admin/"  "\\(.+\\)\\.rb$" "app/admin/${filename}.rb" "rt")
-  (doom-emacs-on-rails-add-custom-projectile-finder "contracts" "app/contracts/"  "\\(.+\\)\\.rb$" "app/contracts/${filename}.rb" "rq"))
 
 (after! org
   ;; Set some faces
@@ -428,6 +413,89 @@
                (window-parameters . ((no-other-window . t)
                                      (no-delete-other-windows . t)))))
 
+;; Markdown beautification
+(after! markdown-mode
+  ;; setq-default es necesario porque markdown-mode usa make-variable-buffer-local,
+  ;; lo que hace que setq solo afecte el buffer actual, no todos los futuros buffers
+  (setq-default markdown-fontify-whole-heading-line nil)
+  (setq-default markdown-hide-markup               t)
+  (setq-default markdown-hide-urls                 t)
+
+  ;; Faces
+  (custom-set-faces!
+    ;; Links
+    '(markdown-link-face           :foreground "#88C0D0" :underline t)
+    '(markdown-url-face            :foreground "#4C566A" :height 0.85)
+    ;; Strikethrough — mismo tamaño que texto normal (height explicit)
+    '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
+    ;; Headers
+    '(markdown-header-delimiter-face :foreground "#616161" :height 0.9)
+    '(markdown-header-face-1 :height 1.6  :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.4  :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.2  :foreground "#D08770" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.15 :foreground "#BF616A" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.1  :foreground "#b48ead" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 1.05 :foreground "#5e81ac" :weight semi-bold  :inherit markdown-header-face))
+
+  (add-hook 'markdown-mode-hook #'abbrev-mode)
+
+  ;; Revelar markup en la línea actual (### ** etc.) mientras se edita
+  (defvar-local nb/markdown-shown-line-beg nil
+    "Posición de inicio de la línea que actualmente muestra el markup crudo.")
+
+  (defun nb/refontify-line (line-beg)
+    "Re-aplica font-lock a la línea que empieza en LINE-BEG para volver a ocultar el markup."
+    (when (and line-beg
+               (integer-or-marker-p line-beg)
+               (>= line-beg (point-min))
+               (<= line-beg (point-max)))
+      (save-excursion
+        (goto-char line-beg)
+        (font-lock-fontify-region (line-beginning-position)
+                                  (line-end-position)))))
+
+  (defun nb/unhide-current-line ()
+    "Muestra el markup markdown en la línea actual; lo vuelve a ocultar al moverse."
+    (unless (minibufferp)
+      (let ((cur-beg (line-beginning-position)))
+        (unless (equal cur-beg nb/markdown-shown-line-beg)
+          ;; Vuelve a ocultar la línea anterior
+          (nb/refontify-line nb/markdown-shown-line-beg)
+          ;; Revela la línea actual (invisible cubre bold/code, display cubre headings)
+          (with-silent-modifications
+            (remove-text-properties cur-beg (line-end-position)
+                                    '(invisible nil display nil composition nil)))
+          (setq nb/markdown-shown-line-beg cur-beg)))))
+
+  (defun nb/markdown-setup ()
+    "Setup por buffer para markdown."
+    (setq-local nb/markdown-shown-line-beg nil)
+    (add-hook 'post-command-hook #'nb/unhide-current-line nil t))
+
+  (add-hook 'markdown-mode-hook #'nb/markdown-setup))
+
+;; Tablas pixel-perfect
+(use-package! valign
+  :hook (markdown-mode . valign-mode)
+  :config
+  (setq valign-fancy-bar t)
+  ;; Forzar alineación al abrir un buffer markdown (timing fix)
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (let ((buf (current-buffer)))
+                (run-with-idle-timer 0.5 nil
+                  (lambda ()
+                    (when (buffer-live-p buf)
+                      (with-current-buffer buf
+                        (valign-region (point-min) (point-max))))))))))
+
+;; Emojis :smile: :wink: etc
+(use-package! emojify
+  :hook (markdown-mode . emojify-mode)
+  :config
+  (setq emojify-emoji-styles '(github))
+  (setq emojify-display-style 'unicode))
+
 (if (require 'toc-org nil t)
     (progn
       (add-hook 'org-mode-hook #'toc-org-mode)
@@ -518,3 +586,11 @@ to load the new symbol and emoji fonts."
             (progn
               (when (string-equal system-type "darwin")
                 (my/setup-custom-font-fallbacks-mac)))))
+
+(setq treesit-language-source-alist
+      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
+        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
+        (html       . "https://github.com/tree-sitter/tree-sitter-html")
+        (css        . "https://github.com/tree-sitter/tree-sitter-css")
+        (json       . "https://github.com/tree-sitter/tree-sitter-json")
+        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
