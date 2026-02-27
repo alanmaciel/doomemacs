@@ -780,13 +780,13 @@ Ignora líneas de tabla — valign maneja su display."
     "Actualiza overlays de tabla con debounce."
     (when (timerp nb/table-update-timer)
       (cancel-timer nb/table-update-timer))
-    (let ((buf (current-buffer)))
-      (setq nb/table-update-timer
-            (run-with-idle-timer 0.5 nil
-              (lambda ()
-                (when (buffer-live-p buf)
-                  (with-current-buffer buf
-                    (nb/update-table-overlays))))))))
+    (setq nb/table-update-timer
+          (run-with-idle-timer 0.5 nil
+            (lambda (buf)
+              (when (buffer-live-p buf)
+                (with-current-buffer buf
+                  (nb/update-table-overlays))))
+            (current-buffer))))
 
   (defun nb/table-bg-setup ()
     "Inicializa overlays de fondo para tablas."
@@ -802,12 +802,12 @@ Ignora líneas de tabla — valign maneja su display."
   (defun nb/valign-setup ()
     "Activa valign con fancy bars y fuerza alineación."
     (valign-mode 1)
-    (let ((buf (current-buffer)))
-      (run-with-idle-timer 0.5 nil
-        (lambda ()
-          (when (buffer-live-p buf)
-            (with-current-buffer buf
-              (valign-region (point-min) (point-max))))))))
+    (run-with-idle-timer 0.5 nil
+      (lambda (buf)
+        (when (buffer-live-p buf)
+          (with-current-buffer buf
+            (valign-region (point-min) (point-max)))))
+      (current-buffer)))
 
   (add-hook 'markdown-mode-hook #'nb/valign-setup t)) ;; t=append, corre al final
 
