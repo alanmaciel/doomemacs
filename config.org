@@ -687,22 +687,52 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; Faces
+  ;; --- Warm/Sepia theme para markdown ---
+  ;; Paleta: fondo marrón oscuro cálido, texto crema, acentos ámbar/terracota
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#88C0D0" :underline t)
-    '(markdown-url-face            :foreground "#4C566A" :height 0.85)
-    ;; Strikethrough — mismo tamaño que texto normal (height explicit)
+    '(markdown-link-face           :foreground "#D4A055" :underline t)
+    '(markdown-url-face            :foreground "#6B5B4E" :height 0.85)
+    ;; Strikethrough
     '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
-    ;; Headers
-    '(markdown-header-delimiter-face :foreground "#616161" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#D08770" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.15 :foreground "#BF616A" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 1.1  :foreground "#b48ead" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-6 :height 1.05 :foreground "#5e81ac" :weight semi-bold  :inherit markdown-header-face))
+    ;; Bold/Italic
+    '(markdown-bold-face           :foreground "#F0D9B5" :weight bold)
+    '(markdown-italic-face         :foreground "#D4B896" :slant italic)
+    ;; Code inline
+    '(markdown-inline-code-face    :foreground "#E8C47C" :background "#2A2017")
+    ;; Code blocks
+    '(markdown-pre-face            :foreground "#C8B08A" :background "#1E1810" :extend t)
+    '(markdown-code-face           :foreground "#C8B08A" :background "#1E1810" :extend t)
+    ;; Headers — degradado ámbar → terracota → púrpura cálido
+    '(markdown-header-delimiter-face :foreground "#4A3C2E" :height 0.9)
+    '(markdown-header-face-1 :height 1.6  :foreground "#F2C867" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.4  :foreground "#E8A840" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.2  :foreground "#D4825A" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.15 :foreground "#C46B50" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.1  :foreground "#B07A6B" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 1.05 :foreground "#9B8578" :weight semi-bold  :inherit markdown-header-face)
+    ;; Blockquotes
+    '(markdown-blockquote-face     :foreground "#A89580" :slant italic)
+    ;; HR
+    '(markdown-hr-face             :foreground "#5A4A3A" :strike-through "#5A4A3A")
+    ;; Lista
+    '(markdown-list-face           :foreground "#D4A055"))
 
+  ;; Fondo cálido + fuente serif para prosa (solo en buffers markdown)
+  (defun nb/markdown-warm-theme ()
+    "Aplica tema warm/sepia al buffer markdown."
+    ;; Fondo marrón oscuro cálido
+    (face-remap-add-relative 'default
+      :background "#1C1612" :foreground "#D5C4A1" :family "Charter" :height 150)
+    ;; Fringe sigue el fondo
+    (face-remap-add-relative 'fringe :background "#1C1612")
+    ;; Line numbers más sutiles
+    (face-remap-add-relative 'line-number :foreground "#4A3C2E" :background "#1C1612")
+    (face-remap-add-relative 'line-number-current-line :foreground "#8B7355" :background "#1C1612")
+    ;; Region/selección cálida
+    (face-remap-add-relative 'region :background "#3A2A1E"))
+
+  (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
 
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
@@ -761,7 +791,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt (or (doom-color 'bg-alt) "#21242b")))
+    (let ((bg-alt "#241C14")) ;; tabla: ligeramente más oscuro que el fondo sepia
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
