@@ -472,7 +472,19 @@
     (setq-local nb/markdown-shown-line-beg nil)
     (add-hook 'post-command-hook #'nb/unhide-current-line nil t))
 
-  (add-hook 'markdown-mode-hook #'nb/markdown-setup))
+  (add-hook 'markdown-mode-hook #'nb/markdown-setup)
+
+  ;; Ocultar filas separadoras de tablas (|---|---|  |:---:|---:|)
+  (defun nb/markdown-hide-table-separator-setup ()
+    "Oculta las filas |---|---| de tablas markdown via font-lock."
+    (font-lock-add-keywords
+     nil
+     '(("^[[:space:]]*|[-|: \t]+|[[:space:]]*$"
+        0 '(face markdown-markup-face invisible markdown-markup) prepend))
+     t)
+    (font-lock-flush))
+
+  (add-hook 'markdown-mode-hook #'nb/markdown-hide-table-separator-setup))
 
 ;; Tablas pixel-perfect
 (use-package! valign
