@@ -425,7 +425,7 @@
   ;; Paleta: fondo crema cálido, texto marrón chocolate, headings marrón oscuro
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#2A6496" :underline t)
+    '(markdown-link-face           :foreground "#0066FF" :underline t)
     '(markdown-url-face            :foreground "#8B7B6B" :height 0.85)
     ;; Strikethrough
     '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
@@ -447,8 +447,8 @@
     '(markdown-header-face-6 :height 1.05 :foreground "#6B5744" :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes — texto normal (no italic), fondo lavanda claro
     '(markdown-blockquote-face     :foreground "#4A3728" :slant normal :background "#EDE7DC" :extend t)
-    ;; HR — línea dorada/ocre
-    '(markdown-hr-face             :foreground "#C4A265" :strike-through "#C4A265")
+    ;; HR — línea sencilla ocre
+    '(markdown-hr-face             :foreground "#F3EDE4" :strike-through "#C4A265")
     ;; Lista
     '(markdown-list-face           :foreground "#4A3728"))
 
@@ -466,10 +466,10 @@
     ;; Region/selección cálida
     (face-remap-add-relative 'region :background "#DDD4C4")
     ;; Cursor azul acero (evil sobreescribe face, hay que usar sus variables)
-    (face-remap-add-relative 'cursor :background "#2A6496")
-    (setq-local evil-normal-state-cursor '(box "#2A6496"))
-    (setq-local evil-insert-state-cursor '(bar "#2A6496"))
-    (setq-local evil-visual-state-cursor '(hollow "#2A6496"))
+    (face-remap-add-relative 'cursor :background "#0066FF")
+    (setq-local evil-normal-state-cursor '(box "#0066FF"))
+    (setq-local evil-insert-state-cursor '(bar "#0066FF"))
+    (setq-local evil-visual-state-cursor '(hollow "#0066FF"))
     ;; Sin números de línea
     (display-line-numbers-mode -1))
 
