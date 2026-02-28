@@ -450,7 +450,9 @@
     ;; HR — línea sencilla ocre
     '(markdown-hr-face             :foreground "#F3EDE4" :strike-through "#C4A265")
     ;; Lista
-    '(markdown-list-face           :foreground "#4A3728"))
+    '(markdown-list-face           :foreground "#4A3728")
+    ;; Tablas — mismo color que texto normal, sin fondo de code
+    '(markdown-table-face          :foreground "#4A3728" :background "#F3EDE4" :family "Iosevka Nerd Font" :weight light :height 140))
 
   ;; Fondo crema + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
