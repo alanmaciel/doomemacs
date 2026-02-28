@@ -687,57 +687,57 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; --- Monokai Octagon theme para markdown ---
-  ;; Paleta: doom-monokai-octagon (bg=#282a3a, fg=#eaf2f1)
+  ;; --- Ink theme para markdown (sobrio, elegante, paper profesional) ---
+  ;; Paleta: casi negro azulado, acento único azul acero, jerarquía por peso
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#9cd1bb" :weight bold :underline t)
-    '(markdown-url-face            :foreground "#535763" :height 0.85)
+    '(markdown-link-face           :foreground "#7ca5c4" :underline t)
+    '(markdown-url-face            :foreground "#404555" :height 0.85)
     ;; Strikethrough
     '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
-    '(markdown-bold-face           :foreground "#eaf2f1" :weight bold)
-    '(markdown-italic-face         :foreground "#c39ac9" :slant italic)
+    '(markdown-bold-face           :foreground "#e8eaf0" :weight bold)
+    '(markdown-italic-face         :foreground "#b0b8c4" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#ffd76d" :background "#2e313d" :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-inline-code-face    :foreground "#9ba3af" :background "#1c1e2a" :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#9cd1bb" :background "#1E1F2B" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    '(markdown-code-face           :foreground "#9cd1bb" :background "#1E1F2B" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    ;; Headers — Monokai Octagon outline colors (yellow/cyan/green/fg)
-    '(markdown-header-delimiter-face :foreground "#3a3d4b" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#ffd76d" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#9cd1bb" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#bad761" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.15 :foreground "#eaf2f1" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 1.1  :foreground "#c6c6c6" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-6 :height 1.05 :foreground "#888d94" :weight semi-bold  :inherit markdown-header-face)
+    '(markdown-pre-face            :foreground "#9ba3af" :background "#1c1e2a" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-code-face           :foreground "#9ba3af" :background "#1c1e2a" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    ;; Headers — jerarquía por peso/tamaño; H1 con acento azul, resto gris progresivo
+    '(markdown-header-delimiter-face :foreground "#2a2c38" :height 0.9)
+    '(markdown-header-face-1 :height 1.6  :foreground "#7ca5c4" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.4  :foreground "#e8eaf0" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.2  :foreground "#d0d4dc" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.15 :foreground "#b8bcc6" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.1  :foreground "#a0a4ae" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 1.05 :foreground "#888c96" :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
-    '(markdown-blockquote-face     :foreground "#9cd1bb" :slant italic :background "#2e313d" :extend t)
-    ;; HR — línea sutil base4
-    '(markdown-hr-face             :foreground "#282a3a" :strike-through "#535763")
+    '(markdown-blockquote-face     :foreground "#8a9aac" :slant italic :background "#1c1e2a" :extend t)
+    ;; HR — línea muy sutil
+    '(markdown-hr-face             :foreground "#12131a" :strike-through "#2e3040")
     ;; Lista
-    '(markdown-list-face           :foreground "#ff657a")
+    '(markdown-list-face           :foreground "#8a9aac")
     ;; Tablas
-    '(markdown-table-face          :foreground "#eaf2f1" :background "#1E1F2B" :family "Iosevka Nerd Font" :weight light :height 140))
+    '(markdown-table-face          :foreground "#cdd0d6" :background "#1c1e2a" :family "Iosevka Nerd Font" :weight light :height 140))
 
-  ;; Fondo Monokai Octagon + fuente serif para prosa (solo en buffers markdown)
+  ;; Fondo Ink + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
-    "Aplica tema Monokai Octagon al buffer markdown."
-    ;; Fondo Monokai Octagon
+    "Aplica tema Ink (sobrio, paper profesional) al buffer markdown."
+    ;; Fondo casi negro, tinte azul frío
     (face-remap-add-relative 'default
-      :background "#282a3a" :foreground "#eaf2f1" :family "Charter" :height 210)
+      :background "#12131a" :foreground "#cdd0d6" :family "Charter" :height 210)
     ;; Fringe sigue el fondo
-    (face-remap-add-relative 'fringe :background "#282a3a")
-    ;; Line numbers sutiles
-    (face-remap-add-relative 'line-number :foreground "#535763" :background "#282a3a")
-    (face-remap-add-relative 'line-number-current-line :foreground "#888d94" :background "#282a3a")
-    ;; Region/selección (base3)
-    (face-remap-add-relative 'region :background "#3a3d4b")
-    ;; Cursor amarillo Monokai (evil sobreescribe face, hay que usar sus variables)
-    (face-remap-add-relative 'cursor :background "#ffd76d")
-    (setq-local evil-normal-state-cursor '(box "#ffd76d"))
-    (setq-local evil-insert-state-cursor '(bar "#ffd76d"))
-    (setq-local evil-visual-state-cursor '(hollow "#ffd76d"))
+    (face-remap-add-relative 'fringe :background "#12131a")
+    ;; Line numbers casi invisibles
+    (face-remap-add-relative 'line-number :foreground "#2e3040" :background "#12131a")
+    (face-remap-add-relative 'line-number-current-line :foreground "#505566" :background "#12131a")
+    ;; Region/selección sutil
+    (face-remap-add-relative 'region :background "#1c1e2a")
+    ;; Cursor azul acero (acento único del tema)
+    (face-remap-add-relative 'cursor :background "#7ca5c4")
+    (setq-local evil-normal-state-cursor '(box "#7ca5c4"))
+    (setq-local evil-insert-state-cursor '(bar "#7ca5c4"))
+    (setq-local evil-visual-state-cursor '(hollow "#7ca5c4"))
     ;; Sin números de línea
     (display-line-numbers-mode -1)
     ;; Quitar transparencia en markdown
@@ -752,7 +752,7 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (defun nb/markdown-olivetti ()
     "Activa olivetti para centrar el texto markdown."
     (olivetti-mode 1)
-    (olivetti-set-width 82))
+    (olivetti-set-width 42))
   (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
 
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
@@ -811,7 +811,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#1E1F2B")) ;; tabla: bg-alt Monokai Octagon
+    (let ((bg-alt "#1c1e2a")) ;; tabla: bg-alt Ink theme
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
