@@ -459,7 +459,7 @@
     "Aplica tema warm reading al buffer markdown."
     ;; Fondo crema cálido
     (face-remap-add-relative 'default
-      :background "#F3EDE4" :foreground "#4A3728" :family "Charter" :height 150)
+      :background "#F3EDE4" :foreground "#4A3728" :family "Charter" :height 180)
     ;; Fringe sigue el fondo
     (face-remap-add-relative 'fringe :background "#F3EDE4")
     ;; Line numbers sutiles
@@ -476,8 +476,7 @@
     (display-line-numbers-mode -1)
     ;; Quitar transparencia en markdown
     (set-frame-parameter nil 'alpha-background 100)
-    ;; Big font mode
-    (doom-big-font-mode 1))
+)
 
   (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
