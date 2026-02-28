@@ -687,57 +687,57 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; --- Ink theme para markdown (sobrio, elegante, paper profesional) ---
-  ;; Paleta: casi negro azulado, acento único azul acero, jerarquía por peso
+  ;; --- Stone theme para markdown (neutro, limpio, VS Code dark spirit) ---
+  ;; Paleta: gris neutro puro, verde sutil para code, azul clásico para links
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#7ca5c4" :underline t)
-    '(markdown-url-face            :foreground "#404555" :height 0.85)
+    '(markdown-link-face           :foreground "#61afef" :underline t)
+    '(markdown-url-face            :foreground "#4a4a4a" :height 0.85)
     ;; Strikethrough
     '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
-    '(markdown-bold-face           :foreground "#e8eaf0" :weight bold)
-    '(markdown-italic-face         :foreground "#b0b8c4" :slant italic)
+    '(markdown-bold-face           :foreground "#e8e8e8" :weight bold)
+    '(markdown-italic-face         :foreground "#c0c0c0" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#9ba3af" :background "#1c1e2a" :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-inline-code-face    :foreground "#98c379" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#9ba3af" :background "#1c1e2a" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    '(markdown-code-face           :foreground "#9ba3af" :background "#1c1e2a" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    ;; Headers — jerarquía por peso/tamaño; H1 con acento azul, resto gris progresivo
-    '(markdown-header-delimiter-face :foreground "#2a2c38" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#7ca5c4" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#e8eaf0" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#d0d4dc" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.15 :foreground "#b8bcc6" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 1.1  :foreground "#a0a4ae" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-6 :height 1.05 :foreground "#888c96" :weight semi-bold  :inherit markdown-header-face)
+    '(markdown-pre-face            :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-code-face           :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    ;; Headers — gris progresivo, jerarquía pura por peso y luminosidad
+    '(markdown-header-delimiter-face :foreground "#333333" :height 0.9)
+    '(markdown-header-face-1 :height 1.6  :foreground "#e8e8e8" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.4  :foreground "#c8c8c8" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.2  :foreground "#b0b0b0" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.15 :foreground "#989898" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.1  :foreground "#808080" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 1.05 :foreground "#686868" :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
-    '(markdown-blockquote-face     :foreground "#8a9aac" :slant italic :background "#1c1e2a" :extend t)
-    ;; HR — línea muy sutil
-    '(markdown-hr-face             :foreground "#12131a" :strike-through "#2e3040")
+    '(markdown-blockquote-face     :foreground "#808080" :slant italic :background "#252525" :extend t)
+    ;; HR — línea gris muy sutil
+    '(markdown-hr-face             :foreground "#1e1e1e" :strike-through "#3a3a3a")
     ;; Lista
-    '(markdown-list-face           :foreground "#8a9aac")
+    '(markdown-list-face           :foreground "#808080")
     ;; Tablas
-    '(markdown-table-face          :foreground "#cdd0d6" :background "#1c1e2a" :family "Iosevka Nerd Font" :weight light :height 140))
+    '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 140))
 
-  ;; Fondo Ink + fuente serif para prosa (solo en buffers markdown)
+  ;; Fondo Stone + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
-    "Aplica tema Ink (sobrio, paper profesional) al buffer markdown."
-    ;; Fondo casi negro, tinte azul frío
+    "Aplica tema Stone (neutro, limpio) al buffer markdown."
+    ;; Fondo gris neutro puro
     (face-remap-add-relative 'default
-      :background "#12131a" :foreground "#cdd0d6" :family "Charter" :height 210)
+      :background "#1e1e1e" :foreground "#d0d0d0" :family "Charter" :height 210)
     ;; Fringe sigue el fondo
-    (face-remap-add-relative 'fringe :background "#12131a")
+    (face-remap-add-relative 'fringe :background "#1e1e1e")
     ;; Line numbers casi invisibles
-    (face-remap-add-relative 'line-number :foreground "#2e3040" :background "#12131a")
-    (face-remap-add-relative 'line-number-current-line :foreground "#505566" :background "#12131a")
+    (face-remap-add-relative 'line-number :foreground "#3a3a3a" :background "#1e1e1e")
+    (face-remap-add-relative 'line-number-current-line :foreground "#606060" :background "#1e1e1e")
     ;; Region/selección sutil
-    (face-remap-add-relative 'region :background "#1c1e2a")
-    ;; Cursor azul acero (acento único del tema)
-    (face-remap-add-relative 'cursor :background "#7ca5c4")
-    (setq-local evil-normal-state-cursor '(box "#7ca5c4"))
-    (setq-local evil-insert-state-cursor '(bar "#7ca5c4"))
-    (setq-local evil-visual-state-cursor '(hollow "#7ca5c4"))
+    (face-remap-add-relative 'region :background "#2a2a2a")
+    ;; Cursor azul clásico
+    (face-remap-add-relative 'cursor :background "#61afef")
+    (setq-local evil-normal-state-cursor '(box "#61afef"))
+    (setq-local evil-insert-state-cursor '(bar "#61afef"))
+    (setq-local evil-visual-state-cursor '(hollow "#61afef"))
     ;; Sin números de línea
     (display-line-numbers-mode -1)
     ;; Quitar transparencia en markdown
@@ -811,7 +811,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#1c1e2a")) ;; tabla: bg-alt Ink theme
+    (let ((bg-alt "#252525")) ;; tabla: bg-alt Stone
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
