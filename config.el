@@ -459,7 +459,7 @@
     "Aplica tema warm reading al buffer markdown."
     ;; Fondo crema cálido
     (face-remap-add-relative 'default
-      :background "#F3EDE4" :foreground "#4A3728" :family "Charter" :height 210)
+      :background "#4A3728" :foreground "#F3EDE4" :family "Charter" :height 210)
     ;; Fringe sigue el fondo
     (face-remap-add-relative 'fringe :background "#F3EDE4")
     ;; Line numbers sutiles
