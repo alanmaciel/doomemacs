@@ -448,23 +448,23 @@
     ;; Blockquotes
     '(markdown-blockquote-face     :foreground "#D5C4A1" :slant normal :background "#3E2E20" :extend t)
     ;; HR — línea sencilla ocre
-    '(markdown-hr-face             :foreground "#5C4033" :strike-through "#C4A265")
+    '(markdown-hr-face             :foreground "#3B1F12" :strike-through "#C4A265")
     ;; Lista
     '(markdown-list-face           :foreground "#D4A055")
     ;; Tablas
-    '(markdown-table-face          :foreground "#F3EDE4" :background "#5C4033" :family "Iosevka Nerd Font" :weight light :height 140))
+    '(markdown-table-face          :foreground "#F3EDE4" :background "#3B1F12" :family "Iosevka Nerd Font" :weight light :height 140))
 
   ;; Fondo crema + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
     "Aplica tema warm reading al buffer markdown."
     ;; Fondo crema cálido
     (face-remap-add-relative 'default
-      :background "#5C4033" :foreground "#F3EDE4" :family "Charter" :height 210)
+      :background "#3B1F12" :foreground "#F3EDE4" :family "Charter" :height 210)
     ;; Fringe sigue el fondo
-    (face-remap-add-relative 'fringe :background "#5C4033")
+    (face-remap-add-relative 'fringe :background "#3B1F12")
     ;; Line numbers sutiles
-    (face-remap-add-relative 'line-number :foreground "#6B5744" :background "#5C4033")
-    (face-remap-add-relative 'line-number-current-line :foreground "#A89070" :background "#5C4033")
+    (face-remap-add-relative 'line-number :foreground "#6B5744" :background "#3B1F12")
+    (face-remap-add-relative 'line-number-current-line :foreground "#A89070" :background "#3B1F12")
     ;; Region/selección cálida
     (face-remap-add-relative 'region :background "#5E4636")
     ;; Cursor azul acero (evil sobreescribe face, hay que usar sus variables)
@@ -545,7 +545,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#5C4033")) ;; tabla: mismo fondo que el resto del buffer
+    (let ((bg-alt "#3B1F12")) ;; tabla: mismo fondo que el resto del buffer
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
