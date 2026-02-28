@@ -741,7 +741,9 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
     ;; Sin números de línea
     (display-line-numbers-mode -1)
     ;; Quitar transparencia en markdown
-    (set-frame-parameter nil 'alpha-background 100))
+    (set-frame-parameter nil 'alpha-background 100)
+    ;; Big font mode
+    (doom-big-font-mode 1))
 
   (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
