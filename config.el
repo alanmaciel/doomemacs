@@ -457,7 +457,7 @@
     "Aplica tema warm/sepia al buffer markdown."
     ;; Fondo marrón oscuro cálido
     (face-remap-add-relative 'default
-      :background "#1C1612" :foreground "#D5C4A1" :family "Georgia" :height 150)
+      :background "#1C1612" :foreground "#D5C4A1" :family "Georgia" :height 170)
     ;; Fringe sigue el fondo
     (face-remap-add-relative 'fringe :background "#1C1612")
     ;; Line numbers más sutiles
