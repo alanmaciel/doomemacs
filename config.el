@@ -702,3 +702,7 @@ to load the new symbol and emoji fonts."
         (css        . "https://github.com/tree-sitter/tree-sitter-css")
         (json       . "https://github.com/tree-sitter/tree-sitter-json")
         (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
+
+;; Desactivar ruby linters que fallan con mise shims
+(after! flycheck
+  (setq-default flycheck-disabled-checkers '(ruby-rubocop ruby-reek)))
