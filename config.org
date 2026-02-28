@@ -735,6 +735,14 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
 
+  ;; --- Olivetti: texto centrado, ancho cómodo para lectura ---
+  (require 'olivetti)
+  (defun nb/markdown-olivetti ()
+    "Activa olivetti para centrar el texto markdown."
+    (olivetti-mode 1)
+    (olivetti-set-width 82))
+  (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
+
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
     "Posición de inicio de la línea que actualmente muestra el markup crudo.")

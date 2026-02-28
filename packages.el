@@ -62,3 +62,10 @@
 (package! websocket)
 (package! org-roam-ui)
 (package! magit-delta)
+(package! vdiff)
+(package! vdiff-magit)
+(package! valign)
+(package! emojify)
+;; (package! vdiff-ext
+;;   :recipe (:host github :repo "justbur/vdiff" :files ("vdiff-ext.el")))
+(package! olivetti)
