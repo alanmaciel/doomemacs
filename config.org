@@ -687,52 +687,52 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; --- Spacemacs Light theme para markdown ---
-  ;; Paleta: fondo crema cálido, texto gris-púrpura, headings coloridos
+  ;; --- Warm reading theme para markdown ---
+  ;; Paleta: fondo crema cálido, texto marrón chocolate, headings marrón oscuro
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#3a81c3" :underline t)
-    '(markdown-url-face            :foreground "#a094a2" :height 0.85)
+    '(markdown-link-face           :foreground "#2A6496" :underline t)
+    '(markdown-url-face            :foreground "#8B7B6B" :height 0.85)
     ;; Strikethrough
     '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
-    '(markdown-bold-face           :foreground "#655370" :weight bold)
-    '(markdown-italic-face         :foreground "#655370" :slant italic)
+    '(markdown-bold-face           :foreground "#4A3322" :weight bold)
+    '(markdown-italic-face         :foreground "#4A3728" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#6c3163" :background "#e8e3f0" :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-inline-code-face    :foreground "#6B4226" :background "#E8E0D4" :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#655370" :background "#e8e3f0" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    '(markdown-code-face           :foreground "#655370" :background "#e8e3f0" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    ;; Headers — azul → teal → verde → dorado → púrpura → violeta
-    '(markdown-header-delimiter-face :foreground "#a094a2" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#3a81c3" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#2d9574" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#67b11d" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.15 :foreground "#b1951d" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 1.1  :foreground "#6c3163" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-6 :height 1.05 :foreground "#715ab1" :weight semi-bold  :inherit markdown-header-face)
+    '(markdown-pre-face            :foreground "#4A3728" :background "#EBE4D8" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-code-face           :foreground "#4A3728" :background "#EBE4D8" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    ;; Headers — todos marrón oscuro, solo varía el tamaño
+    '(markdown-header-delimiter-face :foreground "#8B7B6B" :height 0.9)
+    '(markdown-header-face-1 :height 1.6  :foreground "#3E2B1E" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.4  :foreground "#3E2B1E" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.2  :foreground "#3E2B1E" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.15 :foreground "#3E2B1E" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.1  :foreground "#5A4636" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 1.05 :foreground "#6B5744" :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
-    '(markdown-blockquote-face     :foreground "#2aa1ae" :slant italic)
-    ;; HR
-    '(markdown-hr-face             :foreground "#b3b9be" :strike-through "#b3b9be")
+    '(markdown-blockquote-face     :foreground "#7A6A5A" :slant italic)
+    ;; HR — línea dorada/ocre
+    '(markdown-hr-face             :foreground "#C4A265" :strike-through "#C4A265")
     ;; Lista
-    '(markdown-list-face           :foreground "#6c3163"))
+    '(markdown-list-face           :foreground "#4A3728"))
 
-  ;; Fondo claro + fuente serif para prosa (solo en buffers markdown)
+  ;; Fondo crema + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
-    "Aplica tema spacemacs-light al buffer markdown."
+    "Aplica tema warm reading al buffer markdown."
     ;; Fondo crema cálido
     (face-remap-add-relative 'default
-      :background "#fbf8ef" :foreground "#655370" :family "Charter" :height 150)
+      :background "#F3EDE4" :foreground "#4A3728" :family "Charter" :height 150)
     ;; Fringe sigue el fondo
-    (face-remap-add-relative 'fringe :background "#fbf8ef")
+    (face-remap-add-relative 'fringe :background "#F3EDE4")
     ;; Line numbers sutiles
-    (face-remap-add-relative 'line-number :foreground "#a8a8bf" :background "#fbf8ef")
-    (face-remap-add-relative 'line-number-current-line :foreground "#655370" :background "#fbf8ef")
-    ;; Region/selección
-    (face-remap-add-relative 'region :background "#d3d3e7")
+    (face-remap-add-relative 'line-number :foreground "#C4B8A8" :background "#F3EDE4")
+    (face-remap-add-relative 'line-number-current-line :foreground "#8B7B6B" :background "#F3EDE4")
+    ;; Region/selección cálida
+    (face-remap-add-relative 'region :background "#DDD4C4")
     ;; Cursor oscuro sobre fondo claro
-    (face-remap-add-relative 'cursor :background "#100a14")
+    (face-remap-add-relative 'cursor :background "#3E2B1E")
     ;; Sin números de línea
     (display-line-numbers-mode -1))
 
@@ -803,7 +803,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#efeae9")) ;; tabla: ligeramente más oscuro que el fondo crema
+    (let ((bg-alt "#EBE4D8")) ;; tabla: ligeramente más oscuro que el fondo crema
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
