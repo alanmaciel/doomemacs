@@ -687,50 +687,52 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; --- Warm/Sepia theme para markdown ---
-  ;; Paleta: fondo marrón oscuro cálido, texto crema, acentos ámbar/terracota
+  ;; --- Spacemacs Light theme para markdown ---
+  ;; Paleta: fondo crema cálido, texto gris-púrpura, headings coloridos
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#D4A055" :underline t)
-    '(markdown-url-face            :foreground "#6B5B4E" :height 0.85)
+    '(markdown-link-face           :foreground "#3a81c3" :underline t)
+    '(markdown-url-face            :foreground "#a094a2" :height 0.85)
     ;; Strikethrough
     '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
-    '(markdown-bold-face           :foreground "#F0D9B5" :weight bold)
-    '(markdown-italic-face         :foreground "#D4B896" :slant italic)
+    '(markdown-bold-face           :foreground "#655370" :weight bold)
+    '(markdown-italic-face         :foreground "#655370" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#E8C47C" :background "#2A2017" :family "CaskaydiaMono Nerd Font" :weight light)
+    '(markdown-inline-code-face    :foreground "#6c3163" :background "#e8e3f0" :family "CaskaydiaMono Nerd Font" :weight light)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#C8B08A" :background "#1E1810" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
-    '(markdown-code-face           :foreground "#C8B08A" :background "#1E1810" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
-    ;; Headers — degradado ámbar → terracota → púrpura cálido
-    '(markdown-header-delimiter-face :foreground "#4A3C2E" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#F2C867" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#E8A840" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#D4825A" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.15 :foreground "#C46B50" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 1.1  :foreground "#B07A6B" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-6 :height 1.05 :foreground "#9B8578" :weight semi-bold  :inherit markdown-header-face)
+    '(markdown-pre-face            :foreground "#655370" :background "#e8e3f0" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
+    '(markdown-code-face           :foreground "#655370" :background "#e8e3f0" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
+    ;; Headers — azul → teal → verde → dorado → púrpura → violeta
+    '(markdown-header-delimiter-face :foreground "#a094a2" :height 0.9)
+    '(markdown-header-face-1 :height 1.6  :foreground "#3a81c3" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.4  :foreground "#2d9574" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.2  :foreground "#67b11d" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.15 :foreground "#b1951d" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.1  :foreground "#6c3163" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 1.05 :foreground "#715ab1" :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
-    '(markdown-blockquote-face     :foreground "#A89580" :slant italic)
+    '(markdown-blockquote-face     :foreground "#2aa1ae" :slant italic)
     ;; HR
-    '(markdown-hr-face             :foreground "#5A4A3A" :strike-through "#5A4A3A")
+    '(markdown-hr-face             :foreground "#b3b9be" :strike-through "#b3b9be")
     ;; Lista
-    '(markdown-list-face           :foreground "#D4A055"))
+    '(markdown-list-face           :foreground "#6c3163"))
 
-  ;; Fondo cálido + fuente serif para prosa (solo en buffers markdown)
+  ;; Fondo claro + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
-    "Aplica tema warm/sepia al buffer markdown."
-    ;; Fondo marrón oscuro cálido
+    "Aplica tema spacemacs-light al buffer markdown."
+    ;; Fondo crema cálido
     (face-remap-add-relative 'default
-      :background "#1C1612" :foreground "#D5C4A1" :family "Charter" :height 150)
+      :background "#fbf8ef" :foreground "#655370" :family "Charter" :height 150)
     ;; Fringe sigue el fondo
-    (face-remap-add-relative 'fringe :background "#1C1612")
-    ;; Line numbers más sutiles
-    (face-remap-add-relative 'line-number :foreground "#4A3C2E" :background "#1C1612")
-    (face-remap-add-relative 'line-number-current-line :foreground "#8B7355" :background "#1C1612")
-    ;; Region/selección cálida
-    (face-remap-add-relative 'region :background "#3A2A1E"))
+    (face-remap-add-relative 'fringe :background "#fbf8ef")
+    ;; Line numbers sutiles
+    (face-remap-add-relative 'line-number :foreground "#a8a8bf" :background "#fbf8ef")
+    (face-remap-add-relative 'line-number-current-line :foreground "#655370" :background "#fbf8ef")
+    ;; Region/selección
+    (face-remap-add-relative 'region :background "#d3d3e7")
+    ;; Cursor oscuro sobre fondo claro
+    (face-remap-add-relative 'cursor :background "#100a14"))
 
   (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
@@ -799,7 +801,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#241C14")) ;; tabla: ligeramente más oscuro que el fondo sepia
+    (let ((bg-alt "#efeae9")) ;; tabla: ligeramente más oscuro que el fondo crema
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
