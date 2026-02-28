@@ -466,7 +466,7 @@
     ;; Region/selección cálida
     (face-remap-add-relative 'region :background "#DDD4C4")
     ;; Cursor oscuro sobre fondo claro
-    (face-remap-add-relative 'cursor :background "#3E2B1E")
+    (face-remap-add-relative 'cursor :background "#2A6496")
     ;; Sin números de línea
     (display-line-numbers-mode -1))
 
