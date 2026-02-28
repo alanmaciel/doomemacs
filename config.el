@@ -473,7 +473,9 @@
     (setq-local evil-insert-state-cursor '(bar "#0066FF"))
     (setq-local evil-visual-state-cursor '(hollow "#0066FF"))
     ;; Sin números de línea
-    (display-line-numbers-mode -1))
+    (display-line-numbers-mode -1)
+    ;; Quitar transparencia en markdown
+    (set-frame-parameter nil 'alpha-background 100))
 
   (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
