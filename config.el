@@ -433,10 +433,10 @@
     '(markdown-bold-face           :foreground "#F0D9B5" :weight bold)
     '(markdown-italic-face         :foreground "#D4B896" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#E8C47C" :background "#2A2017" :family "CaskaydiaMono Nerd Font" :weight thin)
+    '(markdown-inline-code-face    :foreground "#E8C47C" :background "#2A2017" :family "CaskaydiaMono Nerd Font" :weight light)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#C8B08A" :background "#1E1810" :extend t :family "CaskaydiaMono Nerd Font" :weight thin)
-    '(markdown-code-face           :foreground "#C8B08A" :background "#1E1810" :extend t :family "CaskaydiaMono Nerd Font" :weight thin)
+    '(markdown-pre-face            :foreground "#C8B08A" :background "#1E1810" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
+    '(markdown-code-face           :foreground "#C8B08A" :background "#1E1810" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
     ;; Headers — degradado ámbar → terracota → púrpura cálido
     '(markdown-header-delimiter-face :foreground "#4A3C2E" :height 0.9)
     '(markdown-header-face-1 :height 1.6  :foreground "#F2C867" :weight extra-bold :inherit markdown-header-face)
