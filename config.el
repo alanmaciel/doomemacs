@@ -432,11 +432,11 @@
     ;; Bold/Italic
     '(markdown-bold-face           :foreground "#4A3322" :weight bold)
     '(markdown-italic-face         :foreground "#4A3728" :slant italic)
-    ;; Code inline
-    '(markdown-inline-code-face    :foreground "#5C3D2E" :background "#E8E0D8" :family "Iosevka Nerd Font" :weight light :height 140)
-    ;; Code blocks
-    '(markdown-pre-face            :foreground "#5C4A3A" :background "#F0EBE3" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    '(markdown-code-face           :foreground "#5C4A3A" :background "#F0EBE3" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    ;; Code inline — fondo más marcado para distinguir del texto
+    '(markdown-inline-code-face    :foreground "#5C3D2E" :background "#E2D9CE" :family "Iosevka Nerd Font" :weight light :height 140)
+    ;; Code blocks — fondo claramente distinto del fondo de página
+    '(markdown-pre-face            :foreground "#5C4A3A" :background "#E6DED3" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-code-face           :foreground "#5C4A3A" :background "#E6DED3" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Headers — todos marrón oscuro, solo varía el tamaño
     '(markdown-header-delimiter-face :foreground "#8B7B6B" :height 0.9)
     '(markdown-header-face-1 :height 1.6  :foreground "#3E2B1E" :weight extra-bold :inherit markdown-header-face)
@@ -465,8 +465,11 @@
     (face-remap-add-relative 'line-number-current-line :foreground "#8B7B6B" :background "#F3EDE4")
     ;; Region/selección cálida
     (face-remap-add-relative 'region :background "#DDD4C4")
-    ;; Cursor oscuro sobre fondo claro
+    ;; Cursor azul acero (evil sobreescribe face, hay que usar sus variables)
     (face-remap-add-relative 'cursor :background "#2A6496")
+    (setq-local evil-normal-state-cursor '(box "#2A6496"))
+    (setq-local evil-insert-state-cursor '(bar "#2A6496"))
+    (setq-local evil-visual-state-cursor '(hollow "#2A6496"))
     ;; Sin números de línea
     (display-line-numbers-mode -1))
 
