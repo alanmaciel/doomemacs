@@ -466,7 +466,9 @@
     ;; Region/selección
     (face-remap-add-relative 'region :background "#d3d3e7")
     ;; Cursor oscuro sobre fondo claro
-    (face-remap-add-relative 'cursor :background "#100a14"))
+    (face-remap-add-relative 'cursor :background "#100a14")
+    ;; Sin números de línea
+    (display-line-numbers-mode -1))
 
   (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
   (add-hook 'markdown-mode-hook #'abbrev-mode)
