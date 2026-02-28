@@ -433,10 +433,10 @@
     '(markdown-bold-face           :foreground "#655370" :weight bold)
     '(markdown-italic-face         :foreground "#655370" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#6c3163" :background "#e8e3f0" :family "CaskaydiaMono Nerd Font" :weight light)
+    '(markdown-inline-code-face    :foreground "#6c3163" :background "#e8e3f0" :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#655370" :background "#e8e3f0" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
-    '(markdown-code-face           :foreground "#655370" :background "#e8e3f0" :extend t :family "CaskaydiaMono Nerd Font" :weight light)
+    '(markdown-pre-face            :foreground "#655370" :background "#e8e3f0" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-code-face           :foreground "#655370" :background "#e8e3f0" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Headers — azul → teal → verde → dorado → púrpura → violeta
     '(markdown-header-delimiter-face :foreground "#a094a2" :height 0.9)
     '(markdown-header-face-1 :height 1.6  :foreground "#3a81c3" :weight extra-bold :inherit markdown-header-face)
