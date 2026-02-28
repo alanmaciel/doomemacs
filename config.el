@@ -433,10 +433,10 @@
     '(markdown-bold-face           :foreground "#4A3322" :weight bold)
     '(markdown-italic-face         :foreground "#4A3728" :slant italic)
     ;; Code inline — fondo más marcado para distinguir del texto
-    '(markdown-inline-code-face    :foreground "#5C3D2E" :background "#2e313d" :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-inline-code-face    :foreground "#FFFFFF" :background "#2e313d" :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Code blocks — fondo claramente distinto del fondo de página
-    '(markdown-pre-face            :foreground "#5C4A3A" :background "#2e313d" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    '(markdown-code-face           :foreground "#5C4A3A" :background "#2e313d" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-pre-face            :foreground "#FFFFFF" :background "#2e313d" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-code-face           :foreground "#FFFFFF" :background "#2e313d" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
     ;; Headers — todos marrón oscuro, solo varía el tamaño
     '(markdown-header-delimiter-face :foreground "#8B7B6B" :height 0.9)
     '(markdown-header-face-1 :height 1.6  :foreground "#3E2B1E" :weight extra-bold :inherit markdown-header-face)
