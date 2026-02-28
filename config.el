@@ -540,7 +540,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#EDE8DD")) ;; tabla: crema ligeramente más cálido que el fondo
+    (let ((bg-alt "#F3EDE4")) ;; tabla: mismo fondo que el resto del buffer
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
