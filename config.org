@@ -803,7 +803,7 @@ Ignora líneas de tabla — valign maneja su display."
       (setq nb/table-update-timer nil))
     (mapc #'delete-overlay nb/table-overlays)
     (setq nb/table-overlays nil)
-    (let ((bg-alt "#EBE4D8")) ;; tabla: ligeramente más oscuro que el fondo crema
+    (let ((bg-alt "#EDE8DD")) ;; tabla: crema ligeramente más cálido que el fondo
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "^[[:space:]]*|" nil t)
