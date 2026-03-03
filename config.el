@@ -131,6 +131,14 @@
 (setq forge-topic-list-limit 50          ;; máximo global
       forge-topic-list-limit-per-repo 50) ;; máximo por repo
 
+(setq treesit-language-source-alist
+      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
+        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
+        (html       . "https://github.com/tree-sitter/tree-sitter-html")
+        (css        . "https://github.com/tree-sitter/tree-sitter-css")
+        (json       . "https://github.com/tree-sitter/tree-sitter-json")
+        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
+
 (use-package! diff-hl
   :config
   (custom-set-faces!
@@ -158,6 +166,11 @@
 
 (after! projectile
   (setq projectile-globally-ignored-directories '("flow-typed" "node_modules" "~/.config/emacs/.local/" ".idea" ".vscode" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" ".ccls-cache" ".cache" ".clangd")))
+
+;; (after! projectile-rails
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "services" "app/services/"  "\\(.+\\)\\.rb$" "app/services/${filename}.rb" "rt")
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "admin" "app/admin/"  "\\(.+\\)\\.rb$" "app/admin/${filename}.rb" "rt")
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "contracts" "app/contracts/"  "\\(.+\\)\\.rb$" "app/contracts/${filename}.rb" "rq"))
 
 (after! org
   ;; Set some faces
@@ -454,7 +467,7 @@
     ;; Tablas
     '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 140))
 
-  ;; Fondo crema + fuente serif para prosa (solo en buffers markdown)
+  ;; Fondo Stone + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
     "Aplica tema Stone (neutro, limpio) al buffer markdown."
     ;; Fondo gris neutro puro
@@ -702,7 +715,3 @@ to load the new symbol and emoji fonts."
         (css        . "https://github.com/tree-sitter/tree-sitter-css")
         (json       . "https://github.com/tree-sitter/tree-sitter-json")
         (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
-
-;; Desactivar ruby linters que fallan con mise shims
-(after! flycheck
-  (setq-default flycheck-disabled-checkers '(ruby-rubocop ruby-reek)))

@@ -24,6 +24,7 @@
   - [[#warnings-level][Warnings level]]
   - [[#google-translator][Google translator]]
 - [[#forge-pull-requests][Forge Pull Requests]]
+- [[#tree-sitter][Tree-sitter]]
 - [[#version-control-systems][Version control systems]]
   - [[#git][Git]]
 - [[#editing-configuration][Editing configuration]]
@@ -37,6 +38,7 @@
   - [[#org-journal][Org-Journal]]
   - [[#org-roam][Org-Roam]]
   - [[#beautify-markdown-on-emacs][Beautify Markdown on Emacs]]
+  - [[#tables-valign][Tables (valign)]]
   - [[#toc-org][TOC Org]]
 - [[#ai][AI]]
   - [[#claude-code][Claude Code]]
@@ -319,6 +321,16 @@ Handle Github Pull Requests without leaving Doom Emacs.
 
 #+end_src
 
+* Tree-sitter
+#+begin_src emacs-lisp
+(setq treesit-language-source-alist
+      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
+        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
+        (html       . "https://github.com/tree-sitter/tree-sitter-html")
+        (css        . "https://github.com/tree-sitter/tree-sitter-css")
+        (json       . "https://github.com/tree-sitter/tree-sitter-json")
+        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
+#+end_src
 
 * Version control systems
 ** Git
@@ -369,6 +381,14 @@ Using chords fd or jh in the homerow instead of trying to reach esc everytime.
   (setq projectile-globally-ignored-directories '("flow-typed" "node_modules" "~/.config/emacs/.local/" ".idea" ".vscode" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" ".ccls-cache" ".cache" ".clangd")))
 #+end_src
 
+*** Custom searches
+Add your custom searches (in rails folders)
+#+begin_src emacs-lisp
+;; (after! projectile-rails
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "services" "app/services/"  "\\(.+\\)\\.rb$" "app/services/${filename}.rb" "rt")
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "admin" "app/admin/"  "\\(.+\\)\\.rb$" "app/admin/${filename}.rb" "rt")
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "contracts" "app/contracts/"  "\\(.+\\)\\.rb$" "app/contracts/${filename}.rb" "rq"))
+#+end_src
 
 * Org
 ** Preferences
