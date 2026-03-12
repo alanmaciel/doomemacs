@@ -377,10 +377,18 @@
    "C-c n g" #'org-roam-graph
    "C-c n i" #'org-roam-node-insert
    "C-c n c" #'org-roam-capture
+   ;; Org-roam-ui
+   "C-c n u" #'org-roam-ui-open
+   "C-c n U" #'org-roam-ui-mode
    ;; Dailies
    "C-c n j" #'org-roam-dailies-capture-today
    ;; Completion
-   "C-M-i"   #'completion-at-point))
+   "C-M-i"   #'completion-at-point)
+
+  ;; Doom leader shortcuts
+  (map! :leader
+        :desc "Org-roam UI: open" "n r" #'org-roam-ui-open
+        :desc "Org-roam UI: toggle mode" "n R" #'org-roam-ui-mode))
 
 (setq frame-title-format
       '(""
@@ -406,16 +414,12 @@
     :after org-roam)
 
 (use-package! org-roam-ui
-    :after org-roam ;; or :after org
-;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-;;         a hookable mode anymore, you're advised to pick something yourself
-;;         if you don't care about startup time, use
-;; :hook (after-init . org-roam-ui-mode)
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start nil))
 
 (add-to-list 'display-buffer-alist
              '("\\*org-roam\\*"
