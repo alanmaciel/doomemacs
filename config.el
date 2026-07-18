@@ -48,7 +48,7 @@
 
 
 
-(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 20 )
+(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 18 )
       doom-big-font (font-spec :family "Iosevka Nerd Font" :size 24)
       doom-variable-pitch-font (font-spec :family "Overpass Nerd Font" :size 22)
       doom-serif-font (font-spec :family "BlexMono Nerd Font" :weight 'light :size 22))
@@ -433,17 +433,17 @@
     '(markdown-bold-face           :foreground "#e8e8e8" :weight bold)
     '(markdown-italic-face         :foreground "#c0c0c0" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#98c379" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-inline-code-face    :foreground "#98c379" :background "#252525" :family "Iosevka Nerd Font" :weight light)
     ;; Code blocks
-    '(markdown-pre-face            :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
-    '(markdown-code-face           :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 140)
+    '(markdown-pre-face            :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light)
+    '(markdown-code-face           :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light)
     ;; Headers — gris progresivo, jerarquía pura por peso y luminosidad
     '(markdown-header-delimiter-face :foreground "#333333" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#e8e8e8" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#c8c8c8" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#b0b0b0" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.15 :foreground "#989898" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 1.1  :foreground "#808080" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-1 :height 1.4  :foreground "#e8e8e8" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.2  :foreground "#c8c8c8" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.0  :foreground "#b0b0b0" :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.10 :foreground "#989898" :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.0  :foreground "#808080" :weight bold       :inherit markdown-header-face)
     '(markdown-header-face-6 :height 1.05 :foreground "#686868" :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
     '(markdown-blockquote-face     :foreground "#808080" :slant italic :background "#252525" :extend t)
@@ -452,9 +452,9 @@
     ;; Lista
     '(markdown-list-face           :foreground "#808080")
     ;; Tablas
-    '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 140))
+    '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 120))
 
-  ;; Fondo crema + fuente serif para prosa (solo en buffers markdown)
+  ;; Fondo Stone + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
     "Aplica tema Stone (neutro, limpio) al buffer markdown."
     ;; Fondo gris neutro puro
@@ -702,7 +702,3 @@ to load the new symbol and emoji fonts."
         (css        . "https://github.com/tree-sitter/tree-sitter-css")
         (json       . "https://github.com/tree-sitter/tree-sitter-json")
         (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
-
-;; Desactivar ruby linters que fallan con mise shims
-(after! flycheck
-  (setq-default flycheck-disabled-checkers '(ruby-rubocop ruby-reek)))
