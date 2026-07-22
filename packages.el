@@ -49,6 +49,8 @@
 ;; (unpin! t)
 (package! beacon)
 (package! org-super-agenda)
+(package! eat
+  :recipe (:host codeberg :repo "akib/emacs-eat"))
 (package! claudemacs
   :recipe (:host github :repo "cpoile/claudemacs"))
 (package! org-modern)

@@ -48,7 +48,7 @@
 
 
 
-(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 18 )
+(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 14 )
       doom-big-font (font-spec :family "Iosevka Nerd Font" :size 24)
       doom-variable-pitch-font (font-spec :family "Overpass Nerd Font" :size 22)
       doom-serif-font (font-spec :family "BlexMono Nerd Font" :weight 'light :size 22))
@@ -441,12 +441,12 @@
     '(markdown-link-face           :foreground "#61afef" :underline t)
     '(markdown-url-face            :foreground "#4a4a4a" :height 0.85)
     ;; Strikethrough
-    '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
+    '(markdown-strike-through-face :height 0.85 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
     '(markdown-bold-face           :foreground "#e8e8e8" :weight bold)
     '(markdown-italic-face         :foreground "#c0c0c0" :slant italic)
     ;; Code inline
-    '(markdown-inline-code-face    :foreground "#98c379" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 1.0)
+    '(markdown-inline-code-face    :foreground "#98c379" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 0.85)
     ;; Code blocks
     '(markdown-pre-face            :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 0.90)
     '(markdown-code-face           :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 1.0)
@@ -465,7 +465,7 @@
     ;; Lista
     '(markdown-list-face           :foreground "#808080")
     ;; Tablas
-    '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 1.4))
+    '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 0.85))
 
   ;; Fondo Stone + fuente serif para prosa (solo en buffers markdown)
   (defun nb/markdown-warm-theme ()
@@ -499,7 +499,7 @@
   (defun nb/markdown-olivetti ()
     "Activa olivetti para centrar el texto markdown."
     (olivetti-mode 1)
-    (olivetti-set-width 42))
+    (olivetti-set-width 80))
   (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
 
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
@@ -632,14 +632,18 @@ Ignora líneas de tabla — valign maneja su display."
   :init
   (add-hook 'org-mode-hook #'toc-org-enable))
 
-(use-package! claudemacs)
+(use-package! eat
+  :defer t)
+
+(use-package! claudemacs
+  :after eat)
 
 (require 'claudemacs)
 (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key text-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (with-eval-after-load 'python
-  (define-key python-base-mode-map (kbd "C-c C-e") #'claudemacs-transient))
+  (define-key python-base-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu))
 
 ;; Set a big buffer so we can search our history.
 (with-eval-after-load 'eat
