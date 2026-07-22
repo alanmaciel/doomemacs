@@ -105,6 +105,12 @@
 
   (setq display-line-numbers-type t)
 
+  ;; Helper reusable: los visores (imágenes, PDF, prosa markdown) desactivan los
+  ;; números de línea, que compiten con el contenido en una pantalla pequeña.
+  (defun nb/no-line-numbers ()
+    "Desactiva los números de línea en el buffer actual."
+    (display-line-numbers-mode -1))
+
 (setq default-frame-alist '((width . 115)(height . 34)))
 
 ;; (add-to-list 'default-frame-alist '(alpha . 90))
@@ -256,30 +262,6 @@
   :hook (org-mode . svg-tag-mode)
 )
 
-(setq svg-tag-tags
-      '((":TODO:" . ((lambda (tag) (svg-tag-make "TODO"))))))
-(setq svg-tag-tags
-      '((":HELLO:" .  ((lambda (tag) (svg-tag-make "HELLO"))
-                       (lambda () (interactive) (message "Hello world!"))
-                       "Print a greeting message"))))
-(setq svg-tag-tags
-      '((":TODO:" . ((lambda (tag) (svg-tag-make tag))))))
-(setq svg-tag-tags
-      '(("\\(:[A-Z]+:\\)" . ((lambda (tag)
-                               (svg-tag-make tag :beg 1 :end -1))))))
-(setq svg-tag-tags
-      '(("\\(:[A-Z]+\\)\\|[a-zA-Z#0-9]+:" . ((lambda (tag)
-                                              (svg-tag-make tag :beg 1 :inverse t
-                                                            :margin 0 :crop-right t))))
-        (":[A-Z]+\\(\\|[a-zA-Z#0-9]+:\\)" . ((lambda (tag)
-                                              (svg-tag-make tag :beg 1 :end -1
-                                                            :margin 0 :crop-left t))))))
-(setq svg-tag-tags
-      '(("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
-                                     (svg-tag-make tag :beg 2))))
-        ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
-                                       (svg-tag-make tag :beg 2 :end -1))))))
-
   (defun org-agenda-show-svg ()
     (let* ((case-fold-search nil)
            (keywords (mapcar #'svg-tag--build-keywords svg-tag--active-tags))
@@ -376,13 +358,10 @@
       '(""
         (:eval
          (let ((bf (or buffer-file-name "")))
-           (if (or (and (bound-and-true-p org-roam-directory)
-                        (string-match-p
-                         (regexp-quote (file-truename (expand-file-name org-roam-directory)))
-                         (file-truename bf)))
-                   (string-match-p
-                    (regexp-quote (file-truename "~/RoamNotes"))
-                    (file-truename bf)))
+           (if (and (bound-and-true-p org-roam-directory)
+                    (string-match-p
+                     (regexp-quote (file-truename (expand-file-name org-roam-directory)))
+                     (file-truename bf)))
                (replace-regexp-in-string
                 ".*/[0-9]*-?" "☰ "
                 (subst-char-in-string ?_ ?\s bf))
@@ -425,6 +404,10 @@
   (setq-default markdown-hide-urls                 t)
 
   ;; --- Stone theme para markdown (neutro, limpio, VS Code dark spirit) ---
+  ;; NOTA: colores hex fijos a propósito. A diferencia del resto del config
+  ;; (que usa doom-color), markdown mantiene una paleta oscura constante como
+  ;; entorno de lectura, independiente de doom-theme. Si algún día quieres que
+  ;; siga al tema, reemplaza estos hex por (doom-color ...).
   ;; Paleta: gris neutro puro, verde sutil para code, azul clásico para links
   (custom-set-faces!
     ;; Links
@@ -481,16 +464,12 @@
     (set-frame-parameter nil 'alpha-background 100)
 )
 
-  (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
-  (add-hook 'markdown-mode-hook #'abbrev-mode)
-
   ;; --- Olivetti: texto centrado, ancho cómodo para lectura ---
   (require 'olivetti)
   (defun nb/markdown-olivetti ()
     "Activa olivetti para centrar el texto markdown."
     (olivetti-mode 1)
     (olivetti-set-width 42))
-  (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
 
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
@@ -535,8 +514,6 @@ Ignora líneas de tabla — valign maneja su display."
     (setq-local nb/markdown-shown-line-beg nil)
     (add-hook 'post-command-hook #'nb/unhide-current-line nil t))
 
-  (add-hook 'markdown-mode-hook #'nb/markdown-setup)
-
   ;; --- Background sutil en regiones de tabla ---
   (defvar-local nb/table-overlays nil "Overlays para fondo de tabla.")
   (defvar-local nb/table-update-timer nil "Timer debounce para actualizar overlays.")
@@ -580,8 +557,6 @@ Ignora líneas de tabla — valign maneja su display."
     (nb/update-table-overlays)
     (add-hook 'after-change-functions #'nb/schedule-table-overlay-update nil t))
 
-  (add-hook 'markdown-mode-hook #'nb/table-bg-setup)
-
   ;; --- Valign: tablas pixel-perfect con fancy bars ---
   (require 'valign)
   (setq valign-fancy-bar t)
@@ -596,9 +571,22 @@ Ignora líneas de tabla — valign maneja su display."
             (valign-region (point-min) (point-max)))))
       (current-buffer)))
 
-  (add-hook 'markdown-mode-hook #'nb/valign-setup t)) ;; t=append, corre al final
+  ;; --- Setup unificado ---
+  ;; Un solo hook con orden explícito, en vez de seis add-hook sueltos cuya
+  ;; secuencia dependía de la profundidad/append. El orden importa:
+  ;; warm-theme + olivetti fijan el ancho de ventana ANTES de medir las
+  ;; imágenes inline; valign corre al final sobre las tablas ya renderizadas.
+  (defun nb/markdown-mode-setup ()
+    "Configuración por buffer para markdown, en orden determinista."
+    (nb/markdown-warm-theme)
+    (abbrev-mode 1)
+    (nb/markdown-olivetti)
+    (nb/markdown-setup)
+    (nb/table-bg-setup)
+    (nb/markdown-show-inline-images)
+    (nb/valign-setup))
 
-;; (valign config movido dentro de after! markdown-mode arriba)
+  (add-hook 'markdown-mode-hook #'nb/markdown-mode-setup))
 
 ;; Emojis :smile: :wink: etc
 (use-package! emojify
@@ -608,18 +596,17 @@ Ignora líneas de tabla — valign maneja su display."
   (setq emojify-display-style 'unicode))
 
 (after! markdown-mode
-  ;; (ancho . alto) en píxeles; nil = sin límite en ese eje
+  ;; (ancho . alto) en píxeles; nil = sin límite en ese eje.
+  ;; Nota: se captura display-pixel-width al cargar markdown; en este equipo
+  ;; (GPD Micro PC, pantalla fija) es correcto. Con un monitor externo habría
+  ;; que reevaluar tras conectar.
   (setq markdown-max-image-size
         (cons (round (* 0.85 (display-pixel-width))) nil))
 
   (defun nb/markdown-show-inline-images ()
     "Muestra imágenes inline en markdown, sin fallar si no hay soporte gráfico."
     (when (display-images-p)
-      (ignore-errors (markdown-display-inline-images))))
-
-  ;; Profundidad 90: corre después de nb/markdown-warm-theme y olivetti, para
-  ;; que las imágenes se midan contra el ancho de ventana ya definitivo.
-  (add-hook 'markdown-mode-hook #'nb/markdown-show-inline-images 90))
+      (ignore-errors (markdown-display-inline-images)))))
 
 (if (require 'toc-org nil t)
     (progn
@@ -629,7 +616,7 @@ Ignora líneas de tabla — valign maneja su display."
       (after! markdown-mode
         (map! :map markdown-mode-map
               "C-c C-o" #'toc-org-markdown-follow-thing-at-point)))
-  (warn "toc-org not found"))
+  (display-warning 'doom-config "toc-org not found" :emergency))
 
 (use-package! toc-org
   :commands toc-org-enable
@@ -645,8 +632,7 @@ Ignora líneas de tabla — valign maneja su display."
         image-animate-loop t)
 
   ;; Sin números de línea: compiten con la imagen en una pantalla pequeña
-  (add-hook! 'image-mode-hook
-    (display-line-numbers-mode -1)))
+  (add-hook 'image-mode-hook #'nb/no-line-numbers))
 
 ;; locate-library en vez de require: responde "¿está instalado?" sin cargar
 ;; pdf-tools, preservando la carga diferida por :mode/:magic del módulo.
@@ -674,13 +660,18 @@ Ignora líneas de tabla — valign maneja su display."
         (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
 
         ;; Sin números de línea en el visor
-        (add-hook! 'pdf-view-mode-hook
-          (display-line-numbers-mode -1))))
-  (warn "pdf-tools not found: enable the `pdf' module in init.el and run `doom sync'"))
+        (add-hook 'pdf-view-mode-hook #'nb/no-line-numbers)))
+  (display-warning 'doom-config
+                   "pdf-tools not found: enable the `pdf' module in init.el and run `doom sync'"
+                   :emergency))
 
-(use-package! claudemacs)
+;; :defer + :commands => se autocarga al invocar el menú, sin cargarlo en cada
+;; arranque. Los define-key de abajo sólo guardan el símbolo del comando; la
+;; primera pulsación dispara el autoload.
+(use-package! claudemacs
+  :defer t
+  :commands (claudemacs-transient-menu claudemacs-transient))
 
-(require 'claudemacs)
 (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key text-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
