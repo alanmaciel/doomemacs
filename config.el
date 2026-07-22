@@ -168,7 +168,10 @@
       :background ,(doom-color 'bg)))
   ;; Change how LaTeX and image previews are shown
   (setq org-highlight-latex-and-related '(native entities script)
-        org-image-actual-width (min (/ (display-pixel-width) 3) 800)))
+        ;; GPD Micro PC: pantalla vertical de 720px. Un tercio (240px) es
+        ;; ilegible, así que usamos 85% del ancho con tope de 800px.
+        org-image-actual-width (min (round (* 0.85 (display-pixel-width))) 800)
+        org-startup-with-inline-images t))
 
 (after! org
   (custom-set-faces!
@@ -604,6 +607,20 @@ Ignora líneas de tabla — valign maneja su display."
   (setq emojify-emoji-styles '(github))
   (setq emojify-display-style 'unicode))
 
+(after! markdown-mode
+  ;; (ancho . alto) en píxeles; nil = sin límite en ese eje
+  (setq markdown-max-image-size
+        (cons (round (* 0.85 (display-pixel-width))) nil))
+
+  (defun nb/markdown-show-inline-images ()
+    "Muestra imágenes inline en markdown, sin fallar si no hay soporte gráfico."
+    (when (display-images-p)
+      (ignore-errors (markdown-display-inline-images))))
+
+  ;; Profundidad 90: corre después de nb/markdown-warm-theme y olivetti, para
+  ;; que las imágenes se midan contra el ancho de ventana ya definitivo.
+  (add-hook 'markdown-mode-hook #'nb/markdown-show-inline-images 90))
+
 (if (require 'toc-org nil t)
     (progn
       (add-hook 'org-mode-hook #'toc-org-mode)
@@ -618,6 +635,48 @@ Ignora líneas de tabla — valign maneja su display."
   :commands toc-org-enable
   :init
   (add-hook 'org-mode-hook #'toc-org-enable))
+
+(after! image-mode
+  ;; 'fit-window encoge demasiado en una pantalla de 720px de ancho;
+  ;; 'fit-width aprovecha todo el espacio horizontal disponible.
+  (setq image-auto-resize 'fit-width
+        image-auto-resize-on-window-resize 1
+        ;; Los GIF animados se repiten indefinidamente
+        image-animate-loop t)
+
+  ;; Sin números de línea: compiten con la imagen en una pantalla pequeña
+  (add-hook! 'image-mode-hook
+    (display-line-numbers-mode -1)))
+
+;; locate-library en vez de require: responde "¿está instalado?" sin cargar
+;; pdf-tools, preservando la carga diferida por :mode/:magic del módulo.
+(if (locate-library "pdf-tools")
+    (progn
+      ;; Usar el epdfinfo de Nix. executable-find evita hardcodear una ruta
+      ;; del store, que cambia en cada actualización de nixpkgs.
+      (after! pdf-info
+        (let ((nix-epdfinfo (executable-find "epdfinfo")))
+          (when nix-epdfinfo
+            (setq pdf-info-epdfinfo-program nix-epdfinfo))))
+
+      (after! pdf-view
+        ;; Doom pone 'fit-page; en pantalla vertical se lee mejor a lo ancho.
+        ;; pdf-view-use-scaling (HiDPI) ya lo activa Doom.
+        (setq-default pdf-view-display-size 'fit-width)
+        (setq pdf-view-continuous t
+              pdf-view-resize-factor 1.1)
+
+        ;; Midnight mode para que combine con el tema oscuro.
+        ;; setq! (no setq) es obligatorio: Doom instala un 'custom-set en esta
+        ;; variable que re-renderiza los buffers ya abiertos.
+        (setq! pdf-view-midnight-colors
+               (cons (doom-color 'fg) (doom-color 'bg)))
+        (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
+
+        ;; Sin números de línea en el visor
+        (add-hook! 'pdf-view-mode-hook
+          (display-line-numbers-mode -1))))
+  (warn "pdf-tools not found: enable the `pdf' module in init.el and run `doom sync'"))
 
 (use-package! claudemacs)
 
