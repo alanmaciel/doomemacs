@@ -38,8 +38,12 @@
   - [[#org-journal][Org-Journal]]
   - [[#org-roam][Org-Roam]]
   - [[#beautify-markdown-on-emacs][Beautify Markdown on Emacs]]
+  - [[#markdown-inline-images][Markdown inline images]]
   - [[#tables-valign][Tables (valign)]]
   - [[#toc-org][TOC Org]]
+- [[#document-and-image-preview][Document and image preview]]
+  - [[#images][Images]]
+  - [[#pdf][PDF]]
 - [[#ai][AI]]
   - [[#claude-code][Claude Code]]
   - [[#openai-codex][OpenAI Codex]]
@@ -55,6 +59,7 @@ Before that you need M-x org-babel-tangle so this writes all emacs-lisp blocks t
 The following will generate the config.el, reload doom to restart emacs and print a status message.
 
 Just save config.org it tangles to config.el immediately calls doom/reload so changes take effect without restarting Emacs.
+
 
 Note: sometimes you need to
 C-c C-c on the top of the org file. It updates the local config of the file.
@@ -175,7 +180,7 @@ font-blex-mono-nerd-font \
 font-overpass-mono-nerd-font
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 14 )
+(setq doom-font (font-spec :family "Iosevka Nerd Font" :size 18 )
       doom-big-font (font-spec :family "Iosevka Nerd Font" :size 24)
       doom-variable-pitch-font (font-spec :family "Overpass Nerd Font" :size 22)
       doom-serif-font (font-spec :family "BlexMono Nerd Font" :weight 'light :size 22))
@@ -265,6 +270,12 @@ If you like this type of things.
 How do you want to display line numbers? t, nil, or relative?.
 #+begin_src emacs-lisp
   (setq display-line-numbers-type t)
+
+  ;; Helper reusable: los visores (imágenes, PDF, prosa markdown) desactivan los
+  ;; números de línea, que compiten con el contenido en una pantalla pequeña.
+  (defun nb/no-line-numbers ()
+    "Desactiva los números de línea en el buffer actual."
+    (display-line-numbers-mode -1))
 #+end_src
 
 ** Starting window dimension
@@ -290,7 +301,9 @@ Change the window title to something more simple
 #+end_src
 
 ** Warnings level
-Stop some boring warnings
+Suppress the noisy =:warning=-level chatter at startup. Note that this also
+hides plain =(warn …)= calls (they emit at =:warning=), so the config guards
+below use =(display-warning 'doom-config … :emergency)= to stay visible.
 #+begin_src emacs-lisp
 (setq warning-minimum-level :emergency)
 #+end_src
@@ -404,7 +417,10 @@ Add your custom searches (in rails folders)
       :background ,(doom-color 'bg)))
   ;; Change how LaTeX and image previews are shown
   (setq org-highlight-latex-and-related '(native entities script)
-        org-image-actual-width (min (/ (display-pixel-width) 3) 800)))
+        ;; GPD Micro PC: pantalla vertical de 720px. Un tercio (240px) es
+        ;; ilegible, así que usamos 85% del ancho con tope de 800px.
+        org-image-actual-width (min (round (* 0.85 (display-pixel-width))) 800)
+        org-startup-with-inline-images t))
 #+end_src
 
 Emacs version 29 can now tell the difference between ‘regular’ or ’normal’ font weights and ‘medium’ weights. Let’s use the medium weights for org-mode headings.
@@ -503,30 +519,6 @@ The configurations for svg-tag-mode go here, too:
           ("REVIEW" . ((lambda (tag) (svg-tag-make tag :inverse t :height .85 :face '+org-todo-onhold))))))
   :hook (org-mode . svg-tag-mode)
 )
-
-(setq svg-tag-tags
-      '((":TODO:" . ((lambda (tag) (svg-tag-make "TODO"))))))
-(setq svg-tag-tags
-      '((":HELLO:" .  ((lambda (tag) (svg-tag-make "HELLO"))
-                       (lambda () (interactive) (message "Hello world!"))
-                       "Print a greeting message"))))
-(setq svg-tag-tags
-      '((":TODO:" . ((lambda (tag) (svg-tag-make tag))))))
-(setq svg-tag-tags
-      '(("\\(:[A-Z]+:\\)" . ((lambda (tag)
-                               (svg-tag-make tag :beg 1 :end -1))))))
-(setq svg-tag-tags
-      '(("\\(:[A-Z]+\\)\\|[a-zA-Z#0-9]+:" . ((lambda (tag)
-                                              (svg-tag-make tag :beg 1 :inverse t
-                                                            :margin 0 :crop-right t))))
-        (":[A-Z]+\\(\\|[a-zA-Z#0-9]+:\\)" . ((lambda (tag)
-                                              (svg-tag-make tag :beg 1 :end -1
-                                                            :margin 0 :crop-left t))))))
-(setq svg-tag-tags
-      '(("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
-                                     (svg-tag-make tag :beg 2))))
-        ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
-                                       (svg-tag-make tag :beg 2 :end -1))))))
 #+end_src
 
 *** Fix render in agenda
@@ -647,13 +639,10 @@ Set the name and the date format:
       '(""
         (:eval
          (let ((bf (or buffer-file-name "")))
-           (if (or (and (bound-and-true-p org-roam-directory)
-                        (string-match-p
-                         (regexp-quote (file-truename (expand-file-name org-roam-directory)))
-                         (file-truename bf)))
-                   (string-match-p
-                    (regexp-quote (file-truename "~/RoamNotes"))
-                    (file-truename bf)))
+           (if (and (bound-and-true-p org-roam-directory)
+                    (string-match-p
+                     (regexp-quote (file-truename (expand-file-name org-roam-directory)))
+                     (file-truename bf)))
                (replace-regexp-in-string
                 ".*/[0-9]*-?" "☰ "
                 (subst-char-in-string ?_ ?\s bf))
@@ -708,73 +697,61 @@ Custom faces for headers, hide/show markup on cursor line, tables, emojis.
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; --- Stone theme para markdown (neutro, limpio, VS Code dark spirit) ---
-  ;; Paleta: gris neutro puro, verde sutil para code, azul clásico para links
+  ;; --- Markdown: solo tamaño/peso/estilo; fuente y colores del tema ---
+  ;; No se nombra ninguna familia concreta ni foreground/background: sólo
+  ;; tamaño (:height), peso (:weight) y estilo (italic, underline…). El código
+  ;; y las tablas heredan `fixed-pitch` (mono del tema) para alinear bien; la
+  ;; prosa usa el doom-font y los colores/fondos el doom-theme activo.
   (custom-set-faces!
     ;; Links
-    '(markdown-link-face           :foreground "#61afef" :underline t)
-    '(markdown-url-face            :foreground "#4a4a4a" :height 0.85)
+    '(markdown-link-face           :underline t)
+    '(markdown-url-face            :height 0.85)
     ;; Strikethrough
     '(markdown-strike-through-face :height 0.85 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
-    '(markdown-bold-face           :foreground "#e8e8e8" :weight bold)
-    '(markdown-italic-face         :foreground "#c0c0c0" :slant italic)
-    ;; Code inline
-    '(markdown-inline-code-face    :foreground "#98c379" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 0.85)
-    ;; Code blocks
-    '(markdown-pre-face            :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 0.90)
-    '(markdown-code-face           :foreground "#98c379" :background "#252525" :extend t :family "Iosevka Nerd Font" :weight light :height 1.0)
-    ;; Headers — gris progresivo, jerarquía pura por peso y luminosidad
-    '(markdown-header-delimiter-face :foreground "#333333" :height 0.9)
-    '(markdown-header-face-1 :height 1.6  :foreground "#e8e8e8" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-2 :height 1.4  :foreground "#c8c8c8" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-3 :height 1.2  :foreground "#b0b0b0" :weight extra-bold :inherit markdown-header-face)
-    '(markdown-header-face-4 :height 1.1 :foreground "#989898" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-5 :height 0.9  :foreground "#808080" :weight bold       :inherit markdown-header-face)
-    '(markdown-header-face-6 :height 0.9 :foreground "#686868" :weight semi-bold  :inherit markdown-header-face)
+    '(markdown-bold-face           :weight bold)
+    '(markdown-italic-face         :slant italic)
+    ;; Code inline — fixed-pitch garantiza monoespaciado sin nombrar familia
+    '(markdown-inline-code-face    :inherit fixed-pitch :background "black" :weight normal)
+    ;; Code blocks — fondo negro
+    '(markdown-pre-face            :inherit (fixed-pitch) :background "black" :extend t :weight normal)
+    '(markdown-code-face           :inherit (fixed-pitch) :background "black" :extend t :weight normal)
+    ;; Headers — escala monotónica decreciente; el color lo define el tema.
+    '(markdown-header-delimiter-face :height 0.9)
+    '(markdown-header-face-1 :height 1.5  :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-2 :height 1.3  :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-3 :height 1.15 :weight extra-bold :inherit markdown-header-face)
+    '(markdown-header-face-4 :height 1.05 :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-5 :height 1.0  :weight bold       :inherit markdown-header-face)
+    '(markdown-header-face-6 :height 0.9  :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
-    '(markdown-blockquote-face     :foreground "#808080" :slant italic :background "#252525" :extend t)
-    ;; HR — línea gris muy sutil
-    '(markdown-hr-face             :foreground "#1e1e1e" :strike-through "#3a3a3a")
-    ;; Lista
-    '(markdown-list-face           :foreground "#808080")
-    ;; Tablas
-    '(markdown-table-face          :foreground "#d0d0d0" :background "#252525" :family "Iosevka Nerd Font" :weight light :height 0.85))
+    '(markdown-blockquote-face     :slant italic :extend t)
+    ;; Tablas — fixed-pitch para columnas alineadas al pixel (con valign),
+    ;; al mismo tamaño que el cuerpo (sin :height, hereda de fixed-pitch)
+    '(markdown-table-face          :inherit fixed-pitch :weight normal))
 
-  ;; Fondo Stone + fuente serif para prosa (solo en buffers markdown)
+  ;; Sólo tamaño e interlineado del cuerpo; la familia de fuente y los colores
+  ;; los deja al doom-font y al doom-theme activos.
   (defun nb/markdown-warm-theme ()
-    "Aplica tema Stone (neutro, limpio) al buffer markdown."
-    ;; Fondo gris neutro puro
+    "Ajusta tamaño e interlineado del buffer markdown (fuente y colores del tema)."
+    ;; Cuerpo a ~18pt: buena densidad y largo de línea en la pantalla de 720px.
+    ;; Sin line-spacing: valign lo ignora y cortaría las barras Unicode de las
+    ;; tablas (fancy-bar necesita que las filas se toquen).
     (face-remap-add-relative 'default
-      :background "#1e1e1e" :foreground "#d0d0d0" :family "Charter" :height 210)
-    ;; Fringe sigue el fondo
-    (face-remap-add-relative 'fringe :background "#1e1e1e")
-    ;; Line numbers casi invisibles
-    (face-remap-add-relative 'line-number :foreground "#3a3a3a" :background "#1e1e1e")
-    (face-remap-add-relative 'line-number-current-line :foreground "#606060" :background "#1e1e1e")
-    ;; Region/selección sutil
-    (face-remap-add-relative 'region :background "#2a2a2a")
-    ;; Cursor azul clásico
-    (face-remap-add-relative 'cursor :background "#61afef")
-    (setq-local evil-normal-state-cursor '(box "#61afef"))
-    (setq-local evil-insert-state-cursor '(bar "#61afef"))
-    (setq-local evil-visual-state-cursor '(hollow "#61afef"))
+      :height 180)
     ;; Sin números de línea
     (display-line-numbers-mode -1)
     ;; Quitar transparencia en markdown
     (set-frame-parameter nil 'alpha-background 100)
 )
 
-  (add-hook 'markdown-mode-hook #'nb/markdown-warm-theme)
-  (add-hook 'markdown-mode-hook #'abbrev-mode)
-
   ;; --- Olivetti: texto centrado, ancho cómodo para lectura ---
   (require 'olivetti)
   (defun nb/markdown-olivetti ()
     "Activa olivetti para centrar el texto markdown."
     (olivetti-mode 1)
-    (olivetti-set-width 80))
-  (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
+    ;; ~58 columnas: largo de línea cómodo para lectura con el cuerpo a 18pt.
+    (olivetti-set-width 58))
 
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
@@ -819,53 +796,6 @@ Ignora líneas de tabla — valign maneja su display."
     (setq-local nb/markdown-shown-line-beg nil)
     (add-hook 'post-command-hook #'nb/unhide-current-line nil t))
 
-  (add-hook 'markdown-mode-hook #'nb/markdown-setup)
-
-  ;; --- Background sutil en regiones de tabla ---
-  (defvar-local nb/table-overlays nil "Overlays para fondo de tabla.")
-  (defvar-local nb/table-update-timer nil "Timer debounce para actualizar overlays.")
-
-  (defun nb/update-table-overlays ()
-    "Agrega background sutil a regiones de tabla markdown."
-    (when (timerp nb/table-update-timer)
-      (cancel-timer nb/table-update-timer)
-      (setq nb/table-update-timer nil))
-    (mapc #'delete-overlay nb/table-overlays)
-    (setq nb/table-overlays nil)
-    (let ((bg-alt "#252525")) ;; tabla: bg-alt Stone
-      (save-excursion
-        (goto-char (point-min))
-        (while (re-search-forward "^[[:space:]]*|" nil t)
-          (beginning-of-line)
-          (let ((beg (point)))
-            (while (and (not (eobp))
-                        (looking-at "^[[:space:]]*|"))
-              (forward-line 1))
-            (let ((ov (make-overlay beg (point) nil t nil)))
-              (overlay-put ov 'face `(:background ,bg-alt :extend t))
-              (overlay-put ov 'evaporate t)
-              (overlay-put ov 'nb-table t)
-              (push ov nb/table-overlays)))))))
-
-  (defun nb/schedule-table-overlay-update (&rest _)
-    "Actualiza overlays de tabla con debounce."
-    (when (timerp nb/table-update-timer)
-      (cancel-timer nb/table-update-timer))
-    (setq nb/table-update-timer
-          (run-with-idle-timer 0.5 nil
-            (lambda (buf)
-              (when (buffer-live-p buf)
-                (with-current-buffer buf
-                  (nb/update-table-overlays))))
-            (current-buffer))))
-
-  (defun nb/table-bg-setup ()
-    "Inicializa overlays de fondo para tablas."
-    (nb/update-table-overlays)
-    (add-hook 'after-change-functions #'nb/schedule-table-overlay-update nil t))
-
-  (add-hook 'markdown-mode-hook #'nb/table-bg-setup)
-
   ;; --- Valign: tablas pixel-perfect con fancy bars ---
   (require 'valign)
   (setq valign-fancy-bar t)
@@ -880,9 +810,21 @@ Ignora líneas de tabla — valign maneja su display."
             (valign-region (point-min) (point-max)))))
       (current-buffer)))
 
-  (add-hook 'markdown-mode-hook #'nb/valign-setup t)) ;; t=append, corre al final
+  ;; --- Setup unificado ---
+  ;; Un solo hook con orden explícito, en vez de seis add-hook sueltos cuya
+  ;; secuencia dependía de la profundidad/append. El orden importa:
+  ;; warm-theme + olivetti fijan el ancho de ventana ANTES de medir las
+  ;; imágenes inline; valign corre al final sobre las tablas ya renderizadas.
+  (defun nb/markdown-mode-setup ()
+    "Configuración por buffer para markdown, en orden determinista."
+    (nb/markdown-warm-theme)
+    (abbrev-mode 1)
+    (nb/markdown-olivetti)
+    (nb/markdown-setup)
+    (nb/markdown-show-inline-images)
+    (nb/valign-setup))
 
-;; (valign config movido dentro de after! markdown-mode arriba)
+  (add-hook 'markdown-mode-hook #'nb/markdown-mode-setup))
 
 ;; Emojis :smile: :wink: etc
 (use-package! emojify
@@ -890,6 +832,27 @@ Ignora líneas de tabla — valign maneja su display."
   :config
   (setq emojify-emoji-styles '(github))
   (setq emojify-display-style 'unicode))
+#+end_src
+
+** Markdown inline images
+Show images inline when opening a markdown buffer, sized for the small portrait
+screen. The hook itself is registered by =nb/markdown-mode-setup= above, which
+guarantees this runs *after* =nb/markdown-warm-theme= and olivetti have fixed the
+window width, so images are measured against the definitive width.
+
+#+begin_src emacs-lisp
+(after! markdown-mode
+  ;; (ancho . alto) en píxeles; nil = sin límite en ese eje.
+  ;; Nota: se captura display-pixel-width al cargar markdown; en este equipo
+  ;; (GPD Micro PC, pantalla fija) es correcto. Con un monitor externo habría
+  ;; que reevaluar tras conectar.
+  (setq markdown-max-image-size
+        (cons (round (* 0.85 (display-pixel-width))) nil))
+
+  (defun nb/markdown-show-inline-images ()
+    "Muestra imágenes inline en markdown, sin fallar si no hay soporte gráfico."
+    (when (display-images-p)
+      (ignore-errors (markdown-display-inline-images)))))
 #+end_src
 
 ** Tables (valign)
@@ -905,7 +868,7 @@ Already configured above in the Beautify Markdown section.
       (after! markdown-mode
         (map! :map markdown-mode-map
               "C-c C-o" #'toc-org-markdown-follow-thing-at-point)))
-  (warn "toc-org not found"))
+  (display-warning 'doom-config "toc-org not found" :emergency))
 
 (use-package! toc-org
   :commands toc-org-enable
@@ -913,16 +876,76 @@ Already configured above in the Beautify Markdown section.
   (add-hook 'org-mode-hook #'toc-org-enable))
 #+end_src
 
+* Document and image preview
+** Images
+Open jpg/gif/svg/png/webp directly in =image-mode=, scaled to the window width.
+Emacs is built with native jpeg, gif, svg, png and webp support, so no external
+converter is required.
+
+#+begin_src emacs-lisp
+(after! image-mode
+  ;; 'fit-window encoge demasiado en una pantalla de 720px de ancho;
+  ;; 'fit-width aprovecha todo el espacio horizontal disponible.
+  (setq image-auto-resize 'fit-width
+        image-auto-resize-on-window-resize 1
+        ;; Los GIF animados se repiten indefinidamente
+        image-animate-loop t)
+
+  ;; Sin números de línea: compiten con la imagen en una pantalla pequeña
+  (add-hook 'image-mode-hook #'nb/no-line-numbers))
+#+end_src
+
+** PDF
+=pdf-tools= viene del módulo =:tools pdf= de Doom. El binario =epdfinfo= lo
+provee Nix (=emacsPackages.pdf-tools= en configuration.nix), así que Emacs nunca
+debe compilarlo en =~/.config/emacs=.
+
+#+begin_src emacs-lisp
+;; locate-library en vez de require: responde "¿está instalado?" sin cargar
+;; pdf-tools, preservando la carga diferida por :mode/:magic del módulo.
+(if (locate-library "pdf-tools")
+    (progn
+      ;; Usar el epdfinfo de Nix. executable-find evita hardcodear una ruta
+      ;; del store, que cambia en cada actualización de nixpkgs.
+      (after! pdf-info
+        (let ((nix-epdfinfo (executable-find "epdfinfo")))
+          (when nix-epdfinfo
+            (setq pdf-info-epdfinfo-program nix-epdfinfo))))
+
+      (after! pdf-view
+        ;; Doom pone 'fit-page; en pantalla vertical se lee mejor a lo ancho.
+        ;; pdf-view-use-scaling (HiDPI) ya lo activa Doom.
+        (setq-default pdf-view-display-size 'fit-width)
+        (setq pdf-view-continuous t
+              pdf-view-resize-factor 1.1)
+
+        ;; Midnight mode para que combine con el tema oscuro.
+        ;; setq! (no setq) es obligatorio: Doom instala un 'custom-set en esta
+        ;; variable que re-renderiza los buffers ya abiertos.
+        (setq! pdf-view-midnight-colors
+               (cons (doom-color 'fg) (doom-color 'bg)))
+        (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
+
+        ;; Sin números de línea en el visor
+        (add-hook 'pdf-view-mode-hook #'nb/no-line-numbers)))
+  (display-warning 'doom-config
+                   "pdf-tools not found: enable the `pdf' module in init.el and run `doom sync'"
+                   :emergency))
+#+end_src
+
 * AI
 ** Claude Code
 #+begin_src emacs-lisp
+;; :defer + :commands => se autocarga al invocar el menú, sin cargarlo en cada
+;; arranque. Los define-key de abajo sólo guardan el símbolo del comando; la
+;; primera pulsación dispara el autoload.
+(use-package! claudemacs
+  :defer t
+  :commands (claudemacs-transient-menu claudemacs-transient))
+
 (use-package! eat
   :defer t)
 
-(use-package! claudemacs
-  :after eat)
-
-(require 'claudemacs)
 (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key text-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
