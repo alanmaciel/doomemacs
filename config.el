@@ -105,10 +105,10 @@
 
   (setq display-line-numbers-type t)
 
-  ;; Helper reusable: los visores (imágenes, PDF, prosa markdown) desactivan los
-  ;; números de línea, que compiten con el contenido en una pantalla pequeña.
+  ;; Reusable helper: viewers (images, PDF, markdown prose) turn off line
+  ;; numbers, which compete with the content on a small screen.
   (defun nb/no-line-numbers ()
-    "Desactiva los números de línea en el buffer actual."
+    "Turn off line numbers in the current buffer."
     (display-line-numbers-mode -1))
 
 (setq default-frame-alist '((width . 115)(height . 34)))
@@ -134,8 +134,8 @@
       (time-subtract (current-time)
                      (days-to-time 30)))  ;; 30 days
 
-(setq forge-topic-list-limit 50          ;; máximo global
-      forge-topic-list-limit-per-repo 50) ;; máximo por repo
+(setq forge-topic-list-limit 50          ;; global maximum
+      forge-topic-list-limit-per-repo 50) ;; maximum per repo
 
 (setq treesit-language-source-alist
       '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
@@ -187,8 +187,8 @@
       :background ,(doom-color 'bg)))
   ;; Change how LaTeX and image previews are shown
   (setq org-highlight-latex-and-related '(native entities script)
-        ;; GPD Micro PC: pantalla vertical de 720px. Un tercio (240px) es
-        ;; ilegible, así que usamos 85% del ancho con tope de 800px.
+        ;; GPD Micro PC: 720px portrait screen. A third of it (240px) is
+        ;; unreadable, so we use 85% of the width capped at 800px.
         org-image-actual-width (min (round (* 0.85 (display-pixel-width))) 800)
         org-startup-with-inline-images t))
 
@@ -410,17 +410,17 @@
 
 ;; Markdown beautification
 (after! markdown-mode
-  ;; setq-default es necesario porque markdown-mode usa make-variable-buffer-local,
-  ;; lo que hace que setq solo afecte el buffer actual, no todos los futuros buffers
+  ;; setq-default is required because markdown-mode uses make-variable-buffer-local,
+  ;; which makes setq affect only the current buffer, not every future buffer
   (setq-default markdown-fontify-whole-heading-line nil)
   (setq-default markdown-hide-markup               t)
   (setq-default markdown-hide-urls                 t)
 
-  ;; --- Markdown: solo tamaño/peso/estilo; fuente y colores del tema ---
-  ;; No se nombra ninguna familia concreta ni foreground/background: sólo
-  ;; tamaño (:height), peso (:weight) y estilo (italic, underline…). El código
-  ;; y las tablas heredan `fixed-pitch` (mono del tema) para alinear bien; la
-  ;; prosa usa el doom-font y los colores/fondos el doom-theme activo.
+  ;; --- Markdown: size/weight/style only; font and colors come from the theme ---
+  ;; No concrete family is named, and no foreground/background: only size
+  ;; (:height), weight (:weight) and style (italic, underline…). Code and
+  ;; tables inherit `fixed-pitch` (the theme's mono) so they align well; prose
+  ;; uses doom-font, and colors/backgrounds come from the active doom-theme.
   (custom-set-faces!
     ;; Links
     '(markdown-link-face           :underline t)
@@ -430,12 +430,12 @@
     ;; Bold/Italic
     '(markdown-bold-face           :weight bold)
     '(markdown-italic-face         :slant italic)
-    ;; Code inline — fixed-pitch garantiza monoespaciado sin nombrar familia
+    ;; Inline code — fixed-pitch guarantees monospace without naming a family
     '(markdown-inline-code-face    :inherit fixed-pitch :background "black" :weight normal)
-    ;; Code blocks — fondo negro
+    ;; Code blocks — black background
     '(markdown-pre-face            :inherit (fixed-pitch) :background "black" :extend t :weight normal)
     '(markdown-code-face           :inherit (fixed-pitch) :background "black" :extend t :weight normal)
-    ;; Headers — escala monotónica decreciente; el color lo define el tema.
+    ;; Headers — monotonically decreasing scale; the color is set by the theme.
     '(markdown-header-delimiter-face :height 0.9)
     '(markdown-header-face-1 :height 1.5  :weight extra-bold :inherit markdown-header-face)
     '(markdown-header-face-2 :height 1.3  :weight extra-bold :inherit markdown-header-face)
@@ -445,45 +445,45 @@
     '(markdown-header-face-6 :height 0.9  :weight semi-bold  :inherit markdown-header-face)
     ;; Blockquotes
     '(markdown-blockquote-face     :slant italic :extend t)
-    ;; Tablas — fixed-pitch para columnas alineadas al pixel (con valign),
-    ;; al mismo tamaño que el cuerpo (sin :height, hereda de fixed-pitch)
+    ;; Tables — fixed-pitch for pixel-aligned columns (with valign), at the
+    ;; same size as the body (no :height, inherited from fixed-pitch)
     '(markdown-table-face          :inherit fixed-pitch :weight normal))
 
-  ;; Sólo tamaño e interlineado del cuerpo; la familia de fuente y los colores
-  ;; los deja al doom-font y al doom-theme activos.
+  ;; Body size and line spacing only; the font family and the colors are left
+  ;; to the active doom-font and doom-theme.
   (defun nb/markdown-warm-theme ()
-    "Ajusta tamaño e interlineado del buffer markdown (fuente y colores del tema)."
-    ;; Cuerpo a ~18pt: buena densidad y largo de línea en la pantalla de 720px.
-    ;; Sin line-spacing: valign lo ignora y cortaría las barras Unicode de las
-    ;; tablas (fancy-bar necesita que las filas se toquen).
+    "Adjust size and line spacing of the markdown buffer (font and colors from the theme)."
+    ;; Body at ~18pt: good density and line length on the 720px screen.
+    ;; No line-spacing: valign ignores it and would cut the Unicode bars of the
+    ;; tables (fancy-bar needs the rows to touch).
     (face-remap-add-relative 'default
       :height 180)
-    ;; Sin números de línea
+    ;; No line numbers
     (display-line-numbers-mode -1)
-    ;; Quitar transparencia en markdown
+    ;; Drop transparency in markdown
     (set-frame-parameter nil 'alpha-background 100)
 )
 
-  ;; --- Olivetti: texto centrado, ancho cómodo para lectura ---
+  ;; --- Olivetti: centered text, comfortable width for reading ---
   (require 'olivetti)
   (defun nb/markdown-olivetti ()
-    "Activa olivetti para centrar el texto markdown."
+    "Enable olivetti to center markdown text."
     (olivetti-mode 1)
     (olivetti-set-width 80))
   (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
 
-  ;; --- Revelar markup en la línea actual (### ** etc.) ---
+  ;; --- Reveal markup on the current line (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
-    "Posición de inicio de la línea que actualmente muestra el markup crudo.")
+    "Start position of the line currently showing raw markup.")
 
   (defun nb/on-table-line-p ()
-    "Non-nil si la línea actual es una fila de tabla markdown."
+    "Non-nil if the current line is a markdown table row."
     (save-excursion
       (beginning-of-line)
       (looking-at "[[:space:]]*|")))
 
   (defun nb/refontify-line (line-beg)
-    "Re-aplica font-lock a la línea que empieza en LINE-BEG para volver a ocultar el markup."
+    "Re-apply font-lock to the line starting at LINE-BEG to hide the markup again."
     (when (and line-beg
                (integer-or-marker-p line-beg)
                (>= line-beg (point-min))
@@ -494,33 +494,33 @@
                                   (line-end-position)))))
 
   (defun nb/unhide-current-line ()
-    "Muestra el markup markdown en la línea actual; lo vuelve a ocultar al moverse.
-Ignora líneas de tabla — valign maneja su display."
+    "Show markdown markup on the current line; hide it again when point moves away.
+Ignores table lines — valign handles their display."
     (unless (minibufferp)
       (let ((cur-beg (line-beginning-position)))
         (unless (equal cur-beg nb/markdown-shown-line-beg)
-          ;; Vuelve a ocultar la línea anterior
+          ;; Hide the previous line again
           (nb/refontify-line nb/markdown-shown-line-beg)
-          ;; En líneas de tabla, no tocar nada (valign usa display properties)
+          ;; On table lines, touch nothing (valign uses display properties)
           (if (nb/on-table-line-p)
               (setq nb/markdown-shown-line-beg nil)
-            ;; En otras líneas, revelar el markup
+            ;; On other lines, reveal the markup
             (with-silent-modifications
               (remove-text-properties cur-beg (line-end-position)
                                       '(invisible nil display nil composition nil)))
             (setq nb/markdown-shown-line-beg cur-beg))))))
 
   (defun nb/markdown-setup ()
-    "Setup por buffer para markdown."
+    "Per-buffer setup for markdown."
     (setq-local nb/markdown-shown-line-beg nil)
     (add-hook 'post-command-hook #'nb/unhide-current-line nil t))
 
-  ;; --- Valign: tablas pixel-perfect con fancy bars ---
+  ;; --- Valign: pixel-perfect tables with fancy bars ---
   (require 'valign)
   (setq valign-fancy-bar t)
 
   (defun nb/valign-setup ()
-    "Activa valign con fancy bars y fuerza alineación."
+    "Enable valign with fancy bars and force alignment."
     (valign-mode 1)
     (run-with-idle-timer 0.5 nil
       (lambda (buf)
@@ -529,13 +529,13 @@ Ignora líneas de tabla — valign maneja su display."
             (valign-region (point-min) (point-max)))))
       (current-buffer)))
 
-  ;; --- Setup unificado ---
-  ;; Un solo hook con orden explícito, en vez de seis add-hook sueltos cuya
-  ;; secuencia dependía de la profundidad/append. El orden importa:
-  ;; warm-theme + olivetti fijan el ancho de ventana ANTES de medir las
-  ;; imágenes inline; valign corre al final sobre las tablas ya renderizadas.
+  ;; --- Unified setup ---
+  ;; A single hook with an explicit order, instead of six loose add-hooks whose
+  ;; sequence depended on depth/append. The order matters:
+  ;; warm-theme + olivetti fix the window width BEFORE the inline images are
+  ;; measured; valign runs last, over the already-rendered tables.
   (defun nb/markdown-mode-setup ()
-    "Configuración por buffer para markdown, en orden determinista."
+    "Per-buffer configuration for markdown, in a deterministic order."
     (nb/markdown-warm-theme)
     (abbrev-mode 1)
     (nb/markdown-olivetti)
@@ -553,15 +553,15 @@ Ignora líneas de tabla — valign maneja su display."
   (setq emojify-display-style 'unicode))
 
 (after! markdown-mode
-  ;; (ancho . alto) en píxeles; nil = sin límite en ese eje.
-  ;; Nota: se captura display-pixel-width al cargar markdown; en este equipo
-  ;; (GPD Micro PC, pantalla fija) es correcto. Con un monitor externo habría
-  ;; que reevaluar tras conectar.
+  ;; (width . height) in pixels; nil = no limit on that axis.
+  ;; Note: display-pixel-width is captured when markdown loads; on this machine
+  ;; (GPD Micro PC, fixed screen) that is correct. With an external monitor it
+  ;; would need to be re-evaluated after connecting.
   (setq markdown-max-image-size
         (cons (round (* 0.85 (display-pixel-width))) nil))
 
   (defun nb/markdown-show-inline-images ()
-    "Muestra imágenes inline en markdown, sin fallar si no hay soporte gráfico."
+    "Show inline images in markdown, without failing when there is no graphical support."
     (when (display-images-p)
       (ignore-errors (markdown-display-inline-images)))))
 
@@ -581,50 +581,50 @@ Ignora líneas de tabla — valign maneja su display."
   (add-hook 'org-mode-hook #'toc-org-enable))
 
 (after! image-mode
-  ;; 'fit-window encoge demasiado en una pantalla de 720px de ancho;
-  ;; 'fit-width aprovecha todo el espacio horizontal disponible.
+  ;; 'fit-window shrinks too much on a 720px-wide screen;
+  ;; 'fit-width uses all the available horizontal space.
   (setq image-auto-resize 'fit-width
         image-auto-resize-on-window-resize 1
-        ;; Los GIF animados se repiten indefinidamente
+        ;; Animated GIFs loop indefinitely
         image-animate-loop t)
 
-  ;; Sin números de línea: compiten con la imagen en una pantalla pequeña
+  ;; No line numbers: they compete with the image on a small screen
   (add-hook 'image-mode-hook #'nb/no-line-numbers))
 
-;; locate-library en vez de require: responde "¿está instalado?" sin cargar
-;; pdf-tools, preservando la carga diferida por :mode/:magic del módulo.
+;; locate-library instead of require: it answers "is it installed?" without
+;; loading pdf-tools, preserving the module's lazy loading via :mode/:magic.
 (if (locate-library "pdf-tools")
     (progn
-      ;; Usar el epdfinfo de Nix. executable-find evita hardcodear una ruta
-      ;; del store, que cambia en cada actualización de nixpkgs.
+      ;; Use the epdfinfo from Nix. executable-find avoids hardcoding a store
+      ;; path, which changes on every nixpkgs update.
       (after! pdf-info
         (let ((nix-epdfinfo (executable-find "epdfinfo")))
           (when nix-epdfinfo
             (setq pdf-info-epdfinfo-program nix-epdfinfo))))
 
       (after! pdf-view
-        ;; Doom pone 'fit-page; en pantalla vertical se lee mejor a lo ancho.
-        ;; pdf-view-use-scaling (HiDPI) ya lo activa Doom.
+        ;; Doom sets 'fit-page; on a portrait screen it reads better fit to width.
+        ;; pdf-view-use-scaling (HiDPI) is already enabled by Doom.
         (setq-default pdf-view-display-size 'fit-width)
         (setq pdf-view-continuous t
               pdf-view-resize-factor 1.1)
 
-        ;; Midnight mode para que combine con el tema oscuro.
-        ;; setq! (no setq) es obligatorio: Doom instala un 'custom-set en esta
-        ;; variable que re-renderiza los buffers ya abiertos.
+        ;; Midnight mode so it matches the dark theme.
+        ;; setq! (not setq) is mandatory: Doom installs a 'custom-set on this
+        ;; variable that re-renders already-open buffers.
         (setq! pdf-view-midnight-colors
                (cons (doom-color 'fg) (doom-color 'bg)))
         (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
 
-        ;; Sin números de línea en el visor
+        ;; No line numbers in the viewer
         (add-hook 'pdf-view-mode-hook #'nb/no-line-numbers)))
   (display-warning 'doom-config
                    "pdf-tools not found: enable the `pdf' module in init.el and run `doom sync'"
                    :emergency))
 
-;; :defer + :commands => se autocarga al invocar el menú, sin cargarlo en cada
-;; arranque. Los define-key de abajo sólo guardan el símbolo del comando; la
-;; primera pulsación dispara el autoload.
+;; :defer + :commands => it autoloads when the menu is invoked, instead of
+;; loading on every startup. The define-keys below only store the command
+;; symbol; the first keypress triggers the autoload.
 (use-package! claudemacs
   :defer t
   :commands (claudemacs-transient-menu claudemacs-transient))
