@@ -137,6 +137,14 @@
 (setq forge-topic-list-limit 50          ;; máximo global
       forge-topic-list-limit-per-repo 50) ;; máximo por repo
 
+(setq treesit-language-source-alist
+      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
+        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
+        (html       . "https://github.com/tree-sitter/tree-sitter-html")
+        (css        . "https://github.com/tree-sitter/tree-sitter-css")
+        (json       . "https://github.com/tree-sitter/tree-sitter-json")
+        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
+
 (use-package! diff-hl
   :config
   (custom-set-faces!
@@ -164,6 +172,11 @@
 
 (after! projectile
   (setq projectile-globally-ignored-directories '("flow-typed" "node_modules" "~/.config/emacs/.local/" ".idea" ".vscode" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work" ".ccls-cache" ".cache" ".clangd")))
+
+;; (after! projectile-rails
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "services" "app/services/"  "\\(.+\\)\\.rb$" "app/services/${filename}.rb" "rt")
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "admin" "app/admin/"  "\\(.+\\)\\.rb$" "app/admin/${filename}.rb" "rt")
+;;   (doom-emacs-on-rails-add-custom-projectile-finder "contracts" "app/contracts/"  "\\(.+\\)\\.rb$" "app/contracts/${filename}.rb" "rq"))
 
 (after! org
   ;; Set some faces
@@ -413,7 +426,7 @@
     '(markdown-link-face           :underline t)
     '(markdown-url-face            :height 0.85)
     ;; Strikethrough
-    '(markdown-strike-through-face :height 1.0 :strike-through t :weight normal :slant normal)
+    '(markdown-strike-through-face :height 0.85 :strike-through t :weight normal :slant normal)
     ;; Bold/Italic
     '(markdown-bold-face           :weight bold)
     '(markdown-italic-face         :slant italic)
@@ -456,8 +469,8 @@
   (defun nb/markdown-olivetti ()
     "Activa olivetti para centrar el texto markdown."
     (olivetti-mode 1)
-    ;; ~58 columnas: largo de línea cómodo para lectura con el cuerpo a 18pt.
-    (olivetti-set-width 58))
+    (olivetti-set-width 80))
+  (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
 
   ;; --- Revelar markup en la línea actual (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
@@ -615,12 +628,17 @@ Ignora líneas de tabla — valign maneja su display."
 (use-package! claudemacs
   :defer t
   :commands (claudemacs-transient-menu claudemacs-transient))
+(use-package! eat
+  :defer t)
+
+(use-package! claudemacs
+  :after eat)
 
 (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key text-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (with-eval-after-load 'python
-  (define-key python-base-mode-map (kbd "C-c C-e") #'claudemacs-transient))
+  (define-key python-base-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu))
 
 ;; Set a big buffer so we can search our history.
 (with-eval-after-load 'eat
