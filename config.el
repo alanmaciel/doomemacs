@@ -469,8 +469,8 @@
   (defun nb/markdown-olivetti ()
     "Enable olivetti to center markdown text."
     (olivetti-mode 1)
-    (olivetti-set-width 80))
-  (add-hook 'markdown-mode-hook #'nb/markdown-olivetti)
+    ;; ~58 columns: comfortable line length for reading with the body at 18pt.
+    (olivetti-set-width 58))
 
   ;; --- Reveal markup on the current line (### ** etc.) ---
   (defvar-local nb/markdown-shown-line-beg nil
@@ -628,11 +628,9 @@ Ignores table lines — valign handles their display."
 (use-package! claudemacs
   :defer t
   :commands (claudemacs-transient-menu claudemacs-transient))
+
 (use-package! eat
   :defer t)
-
-(use-package! claudemacs
-  :after eat)
 
 (define-key prog-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") #'claudemacs-transient-menu)
