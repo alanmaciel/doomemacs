@@ -60,7 +60,7 @@
 (package! org-roam)
 (package! grip-mode)
 (package! key-chord)
-(package! org-bullets)
+(package! keycast)
 (package! websocket)
 (package! org-roam-ui)
 (package! magit-delta)

@@ -16,7 +16,6 @@
   - [[#popup-text][Popup text]]
   - [[#modeline][Modeline]]
   - [[#beacon-mode][Beacon mode]]
-  - [[#minimap][Minimap]]
   - [[#line-numbers][Line numbers]]
   - [[#starting-window-dimension][Starting window dimension]]
   - [[#transparency][Transparency]]
@@ -24,7 +23,6 @@
   - [[#warnings-level][Warnings level]]
   - [[#google-translator][Google translator]]
 - [[#forge-pull-requests][Forge Pull Requests]]
-- [[#tree-sitter][Tree-sitter]]
 - [[#version-control-systems][Version control systems]]
   - [[#git][Git]]
 - [[#editing-configuration][Editing configuration]]
@@ -47,7 +45,6 @@
 - [[#ai][AI]]
   - [[#claude-code][Claude Code]]
   - [[#openai-codex][OpenAI Codex]]
-  - [[#tree-sitter-and-colors][Tree sitter and colors]]
 
 * About this config
 This configuration works with Emacs 30+, you'll need to install Doom Emacs.
@@ -230,19 +227,16 @@ Some tweaks to doom-modeline.
 #+end_src
 
 *** Keycast
+Show the current command and its key binding in the mode line with
+=M-x keycast-mode-line-mode=. Keycast loads only when the command is first called.
+doom-modeline replaces the stock =mode-line-format=, so keycast is told to insert
+itself after doom-modeline's main segment.
 #+begin_src emacs-lisp
 (use-package! keycast
-  :commands keycast-mode
+  :commands keycast-mode-line-mode
   :config
-  (define-minor-mode keycast-mode
-    "Show current command and its key binding in the mode line."
-    :global t
-    (if keycast-mode
-        (progn
-          (add-hook 'pre-command-hook 'keycast--update t)
-          (add-to-list 'global-mode-string '("" mode-line-keycast " ")))
-      (remove-hook 'pre-command-hook 'keycast--update)
-      (setq global-mode-string (remove '("" mode-line-keycast " ") global-mode-string))))
+  (setq keycast-mode-line-insert-after '(:eval (doom-modeline-format--main))
+        keycast-mode-line-remove-tail-elements nil)
   (custom-set-faces!
     '(keycast-command :inherit doom-modeline-debug
                       :height 0.9)
@@ -255,15 +249,6 @@ Some tweaks to doom-modeline.
 Highlight the current line when moving.
 #+begin_src emacs-lisp
 (beacon-mode 1)
-#+end_src
-
-** Minimap
-If you like this type of things.
-#+begin_src emacs-lisp
-(setq minimap-window-location 'right)
-(map! :leader
-      (:prefix ("t" . "toggle")
-       :desc "Toggle minimap-mode" "M" #'minimap-mode))
 #+end_src
 
 ** Line numbers
@@ -281,7 +266,8 @@ How do you want to display line numbers? t, nil, or relative?.
 ** Starting window dimension
 Start the initial frame not maximized.
 #+begin_src emacs-lisp
-(setq default-frame-alist '((width . 115)(height . 34)))
+(add-to-list 'default-frame-alist '(width . 115))
+(add-to-list 'default-frame-alist '(height . 34))
 #+end_src
 
 ** Transparency
@@ -319,31 +305,9 @@ Google Traductor, source and target languages
 * Forge Pull Requests
 Handle Github Pull Requests without leaving Doom Emacs.
 
-#+begin_src emacs-lisp
-;; Always use dwim:origin so Forge follows the branch’s upstream if set,
-;; else defaults to "origin"
-(setq forge-remote "dwim:origin")
-;; (setq forge-remote "origin")
-;; Pull only recent topics by default (1 month back)
-(setq forge-pull-limit
-      (time-subtract (current-time)
-                     (days-to-time 30)))  ;; 30 days
-
-(setq forge-topic-list-limit 50          ;; global maximum
-      forge-topic-list-limit-per-repo 50) ;; maximum per repo
-
-#+end_src
-
-* Tree-sitter
-#+begin_src emacs-lisp
-(setq treesit-language-source-alist
-      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
-        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
-        (html       . "https://github.com/tree-sitter/tree-sitter-html")
-        (css        . "https://github.com/tree-sitter/tree-sitter-css")
-        (json       . "https://github.com/tree-sitter/tree-sitter-json")
-        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
-#+end_src
+Forge picks the remote from the =forge.remote= Git variable, not from an Emacs
+variable. To pin it in a repository, run =git config forge.remote origin= there
+(or =s r= in =M-x forge-configure=).
 
 * Version control systems
 ** Git
@@ -448,11 +412,10 @@ Emacs version 29 can now tell the difference between ‘regular’ or ’normal�
       :weight medium)))
 #+end_src
 
-*** Pretty bullets
+*** Indentation
+Indent headings and their content. Heading stars are styled by org-modern below.
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
-(use-package! org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
 
 *** Current line
@@ -540,10 +503,11 @@ The configurations for svg-tag-mode go here, too:
 
 ** Org-modern
 org-modern is really cool – especially when combined with svg-tag-mode. The only downside is it doesn’t play well with org-indent-mode (for now).
+
+Doom's =(org +pretty)= flag already installs org-modern and enables it in org
+buffers, so this block only adjusts its settings.
 #+begin_src emacs-lisp
-(use-package! org-modern
-  :hook (org-mode . org-modern-mode)
-  :config
+(after! org-modern
   (setq
    ;; Edit settings
    org-catch-invisible-edits 'show-and-error
@@ -559,8 +523,8 @@ org-modern is really cool – especially when combined with svg-tag-mode. The on
    org-modern-progress nil
    org-modern-priority nil
    org-modern-horizontal-rule "──────────"
-   org-modern-hide-stars "·"
-   org-modern-star ["⁖"]
+   org-modern-star 'replace
+   org-modern-replace-stars "⁖"
    org-modern-keyword "‣"
    org-modern-list '((43 . "•")
                      (45 . "–")
@@ -597,15 +561,15 @@ Set the name and the date format:
 
 ** Org-Roam
 *** Document everything, make a second brain.
+Doom's =(org +roam)= flag loads org-roam lazily and enables the database
+autosync and =org-roam-protocol=, so only the directory and the node display are
+set here.
 #+begin_src emacs-lisp
-(use-package! org-roam
-  :custom
-  (org-roam-directory (file-truename "~/roam"))
-  :config
+(setq org-roam-directory (file-truename "~/roam"))
+
+(after! org-roam
   (setq org-roam-node-display-template
-        (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  (require 'org-roam-protocol))
+        (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag))))
 
 (after! org-agenda
   (require 'org-super-agenda)
@@ -859,21 +823,13 @@ window width, so images are measured against the definitive width.
 Already configured above in the Beautify Markdown section.
 
 ** TOC Org
+Doom's org module already enables toc-org in org buffers. Enable it in markdown,
+too.
 #+begin_src emacs-lisp
-(if (require 'toc-org nil t)
-    (progn
-      (add-hook 'org-mode-hook #'toc-org-mode)
-      ;; enable in markdown, too
-      (add-hook 'markdown-mode-hook #'toc-org-mode)
-      (after! markdown-mode
-        (map! :map markdown-mode-map
-              "C-c C-o" #'toc-org-markdown-follow-thing-at-point)))
-  (display-warning 'doom-config "toc-org not found" :emergency))
-
-(use-package! toc-org
-  :commands toc-org-enable
-  :init
-  (add-hook 'org-mode-hook #'toc-org-enable))
+(after! markdown-mode
+  (add-hook 'markdown-mode-hook #'toc-org-mode)
+  (map! :map markdown-mode-map
+        "C-c C-o" #'toc-org-markdown-follow-thing-at-point))
 #+end_src
 
 * Document and image preview
@@ -1022,15 +978,3 @@ to load the new symbol and emoji fonts."
 
 ** OpenAI Codex
 Coming soon...
-
-** Tree sitter and colors
-
-#+begin_src emacs-lisp
-(setq treesit-language-source-alist
-      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
-        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
-        (html       . "https://github.com/tree-sitter/tree-sitter-html")
-        (css        . "https://github.com/tree-sitter/tree-sitter-css")
-        (json       . "https://github.com/tree-sitter/tree-sitter-json")
-        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
-#+end_src

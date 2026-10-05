@@ -78,17 +78,10 @@
 (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding)
 
 (use-package! keycast
-  :commands keycast-mode
+  :commands keycast-mode-line-mode
   :config
-  (define-minor-mode keycast-mode
-    "Show current command and its key binding in the mode line."
-    :global t
-    (if keycast-mode
-        (progn
-          (add-hook 'pre-command-hook 'keycast--update t)
-          (add-to-list 'global-mode-string '("" mode-line-keycast " ")))
-      (remove-hook 'pre-command-hook 'keycast--update)
-      (setq global-mode-string (remove '("" mode-line-keycast " ") global-mode-string))))
+  (setq keycast-mode-line-insert-after '(:eval (doom-modeline-format--main))
+        keycast-mode-line-remove-tail-elements nil)
   (custom-set-faces!
     '(keycast-command :inherit doom-modeline-debug
                       :height 0.9)
@@ -98,11 +91,6 @@
 
 (beacon-mode 1)
 
-(setq minimap-window-location 'right)
-(map! :leader
-      (:prefix ("t" . "toggle")
-       :desc "Toggle minimap-mode" "M" #'minimap-mode))
-
   (setq display-line-numbers-type t)
 
   ;; Reusable helper: viewers (images, PDF, markdown prose) turn off line
@@ -111,7 +99,8 @@
     "Turn off line numbers in the current buffer."
     (display-line-numbers-mode -1))
 
-(setq default-frame-alist '((width . 115)(height . 34)))
+(add-to-list 'default-frame-alist '(width . 115))
+(add-to-list 'default-frame-alist '(height . 34))
 
 ;; (add-to-list 'default-frame-alist '(alpha . 90))
 
@@ -124,26 +113,6 @@
 
 (setq google-translate-default-source-language "en")
 (setq google-translate-default-target-language "es-MX")
-
-;; Always use dwim:origin so Forge follows the branch’s upstream if set,
-;; else defaults to "origin"
-(setq forge-remote "dwim:origin")
-;; (setq forge-remote "origin")
-;; Pull only recent topics by default (1 month back)
-(setq forge-pull-limit
-      (time-subtract (current-time)
-                     (days-to-time 30)))  ;; 30 days
-
-(setq forge-topic-list-limit 50          ;; global maximum
-      forge-topic-list-limit-per-repo 50) ;; maximum per repo
-
-(setq treesit-language-source-alist
-      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
-        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
-        (html       . "https://github.com/tree-sitter/tree-sitter-html")
-        (css        . "https://github.com/tree-sitter/tree-sitter-css")
-        (json       . "https://github.com/tree-sitter/tree-sitter-json")
-        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
 
 (use-package! diff-hl
   :config
@@ -214,8 +183,6 @@
       :weight medium)))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
-(use-package! org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 (add-hook 'text-mode-hook (lambda () (hl-line-mode -1)))
 
@@ -289,9 +256,7 @@
         (setq keyword (car keywords)))))
   (add-hook 'org-agenda-finalize-hook #'org-agenda-show-svg)
 
-(use-package! org-modern
-  :hook (org-mode . org-modern-mode)
-  :config
+(after! org-modern
   (setq
    ;; Edit settings
    org-catch-invisible-edits 'show-and-error
@@ -307,8 +272,8 @@
    org-modern-progress nil
    org-modern-priority nil
    org-modern-horizontal-rule "──────────"
-   org-modern-hide-stars "·"
-   org-modern-star ["⁖"]
+   org-modern-star 'replace
+   org-modern-replace-stars "⁖"
    org-modern-keyword "‣"
    org-modern-list '((43 . "•")
                      (45 . "–")
@@ -333,14 +298,11 @@
  org-journal-date-format "%a, %Y-%m-%d"
  org-journal-file-format "%Y-%m-%d.org")
 
-(use-package! org-roam
-  :custom
-  (org-roam-directory (file-truename "~/roam"))
-  :config
+(setq org-roam-directory (file-truename "~/roam"))
+
+(after! org-roam
   (setq org-roam-node-display-template
-        (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode)
-  (require 'org-roam-protocol))
+        (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag))))
 
 (after! org-agenda
   (require 'org-super-agenda)
@@ -565,20 +527,10 @@ Ignores table lines — valign handles their display."
     (when (display-images-p)
       (ignore-errors (markdown-display-inline-images)))))
 
-(if (require 'toc-org nil t)
-    (progn
-      (add-hook 'org-mode-hook #'toc-org-mode)
-      ;; enable in markdown, too
-      (add-hook 'markdown-mode-hook #'toc-org-mode)
-      (after! markdown-mode
-        (map! :map markdown-mode-map
-              "C-c C-o" #'toc-org-markdown-follow-thing-at-point)))
-  (display-warning 'doom-config "toc-org not found" :emergency))
-
-(use-package! toc-org
-  :commands toc-org-enable
-  :init
-  (add-hook 'org-mode-hook #'toc-org-enable))
+(after! markdown-mode
+  (add-hook 'markdown-mode-hook #'toc-org-mode)
+  (map! :map markdown-mode-map
+        "C-c C-o" #'toc-org-markdown-follow-thing-at-point))
 
 (after! image-mode
   ;; 'fit-window shrinks too much on a 720px-wide screen;
@@ -704,11 +656,3 @@ to load the new symbol and emoji fonts."
             (progn
               (when (string-equal system-type "darwin")
                 (my/setup-custom-font-fallbacks-mac)))))
-
-(setq treesit-language-source-alist
-      '((javascript . "https://github.com/tree-sitter/tree-sitter-javascript")
-        (jsdoc      . "https://github.com/tree-sitter/tree-sitter-jsdoc")
-        (html       . "https://github.com/tree-sitter/tree-sitter-html")
-        (css        . "https://github.com/tree-sitter/tree-sitter-css")
-        (json       . "https://github.com/tree-sitter/tree-sitter-json")
-        (ruby       . "https://github.com/tree-sitter/tree-sitter-ruby")))
