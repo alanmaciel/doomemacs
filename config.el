@@ -29,15 +29,15 @@
   )
 
 ;; Enable line highlight only in dashboard
-;; (add-hook '+doom-dashboard-mode-hook #'hl-line-mode)
+;; (add-hook '+dashboard-mode-hook #'hl-line-mode)
 ;; Dashboard: make keyboard selection look like mouse hover
 ;; Yellow bg + black text only on Doom dashboard, via overlay
 
 ;; (setq fancy-splash-image "~/dotfiles-local/emacs/doom.d/splash/lucky-doom-emacs-color.png")
 
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+(remove-hook '+dashboard-functions #'+dashboard-widget-banner)
 
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+(remove-hook '+dashboard-functions #'+dashboard-widget-footer)
 
 (setq doom-theme 'doom-monokai-octagon
       doom-themes-treemacs-enable-variable-pitch nil)
