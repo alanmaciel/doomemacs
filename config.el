@@ -298,6 +298,12 @@
  org-journal-date-format "%a, %Y-%m-%d"
  org-journal-file-format "%Y-%m-%d.org")
 
+(after! org-download
+  (when (and (getenv "WAYLAND_DISPLAY")
+             (executable-find "grim")
+             (executable-find "slurp"))
+    (setq org-download-screenshot-method "grim -g \"$(slurp)\" %s")))
+
 (setq org-roam-directory (file-truename "~/roam"))
 
 (after! org-roam

@@ -34,6 +34,7 @@
   - [[#org-modern][Org-modern]]
   - [[#org-appear][Org-appear]]
   - [[#org-journal][Org-Journal]]
+  - [[#org-download-screenshots][Org-Download screenshots]]
   - [[#org-roam][Org-Roam]]
   - [[#beautify-markdown-on-emacs][Beautify Markdown on Emacs]]
   - [[#markdown-inline-images][Markdown inline images]]
@@ -557,6 +558,17 @@ Set the name and the date format:
  org-journal-date-format "%a, %Y-%m-%d"
  org-journal-file-format "%Y-%m-%d.org")
 
+#+end_src
+
+** Org-Download screenshots
+Doom picks =maim= for =org-download-screenshot=, but it's an X11 tool and fails under
+Wayland (Hyprland). Use =grim= with =slurp= to select the region instead:
+#+begin_src emacs-lisp
+(after! org-download
+  (when (and (getenv "WAYLAND_DISPLAY")
+             (executable-find "grim")
+             (executable-find "slurp"))
+    (setq org-download-screenshot-method "grim -g \"$(slurp)\" %s")))
 #+end_src
 
 ** Org-Roam
