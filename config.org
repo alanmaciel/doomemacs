@@ -10,6 +10,7 @@
   - [[#highlighted-menu][Highlighted menu]]
   - [[#splash-image][Splash image]]
   - [[#footer][Footer]]
+  - [[#vertical-centering][Vertical centering]]
   - [[#theme][Theme]]
   - [[#fonts][Fonts]]
   - [[#comments][Comments]]
@@ -133,6 +134,27 @@ Remove splash image.
 Remove footer.
 #+begin_src emacs-lisp
 (remove-hook '+dashboard-functions #'+dashboard-widget-footer)
+#+end_src
+
+** Vertical centering
+Doom centers the dashboard by counting lines, but the menu's spacer lines don't render
+at full height, so it thinks the menu is taller than it is and leaves it stuck near the
+top. Recompute the top padding from the menu's real pixel height instead:
+#+begin_src emacs-lisp
+(defun my/dashboard-center-vertically-h (&rest _)
+  "Pad the dashboard so its widgets are vertically centered, measured in pixels."
+  (when-let* ((buf (doom-fallback-buffer))
+              (win (get-buffer-window buf t)))
+    (with-current-buffer buf
+      (save-excursion
+        (with-silent-modifications
+          (goto-char (point-min))
+          (delete-region (point) (progn (skip-chars-forward "\n") (point)))
+          (let* ((content (cdr (window-text-pixel-size win (point-min) (point-max))))
+                 (free (- (window-body-height win t) content)))
+            (insert (make-string (max 0 (round free (* 2 (frame-char-height (window-frame win)))))
+                                 ?\n))))))))
+(advice-add #'+dashboard-resize-h :after #'my/dashboard-center-vertically-h)
 #+end_src
 
 ** Theme
