@@ -39,6 +39,21 @@
 
 (remove-hook '+dashboard-functions #'+dashboard-widget-footer)
 
+(defun my/dashboard-center-vertically-h (&rest _)
+  "Pad the dashboard so its widgets are vertically centered, measured in pixels."
+  (when-let* ((buf (doom-fallback-buffer))
+              (win (get-buffer-window buf t)))
+    (with-current-buffer buf
+      (save-excursion
+        (with-silent-modifications
+          (goto-char (point-min))
+          (delete-region (point) (progn (skip-chars-forward "\n") (point)))
+          (let* ((content (cdr (window-text-pixel-size win (point-min) (point-max))))
+                 (free (- (window-body-height win t) content)))
+            (insert (make-string (max 0 (round free (* 2 (frame-char-height (window-frame win)))))
+                                 ?\n))))))))
+(advice-add #'+dashboard-resize-h :after #'my/dashboard-center-vertically-h)
+
 (setq doom-theme 'doom-monokai-octagon
       doom-themes-treemacs-enable-variable-pitch nil)
 
