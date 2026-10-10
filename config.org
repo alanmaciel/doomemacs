@@ -112,7 +112,7 @@ Like in the vt100s ttys
 
 #+begin_src emacs-lisp
 ;; Enable line highlight only in dashboard
-;; (add-hook '+doom-dashboard-mode-hook #'hl-line-mode)
+;; (add-hook '+dashboard-mode-hook #'hl-line-mode)
 ;; Dashboard: make keyboard selection look like mouse hover
 ;; Yellow bg + black text only on Doom dashboard, via overlay
 #+end_src
@@ -126,13 +126,13 @@ Set splash image.
 
 Remove splash image.
 #+begin_src emacs-lisp
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+(remove-hook '+dashboard-functions #'+dashboard-widget-banner)
 #+end_src
 
 ** Footer
 Remove footer.
 #+begin_src emacs-lisp
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+(remove-hook '+dashboard-functions #'+dashboard-widget-footer)
 #+end_src
 
 ** Theme
